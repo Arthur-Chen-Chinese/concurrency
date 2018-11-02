@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.concurrency.dao.HistoryMapper">
+    <resultMap id="BaseResultMap" type="com.my.concurrency.models.History">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cus_start_id" jdbcType="INTEGER" property="cusStartId"/>
+        <result column="cus_end_id" jdbcType="INTEGER" property="cusEndId"/>
+        <result column="checkout_start_id" jdbcType="INTEGER" property="checkoutStartId"/>
+        <result column="checkout_end_id" jdbcType="INTEGER" property="checkoutEndId"/>
+        <result column="num_of_checkouts" jdbcType="INTEGER" property="numOfCheckouts"/>
+        <result column="num_of_products_in_trolley" jdbcType="VARCHAR" property="numOfProductsInTrolley"/>
+        <result column="time_for_each_product" jdbcType="VARCHAR" property="timeForEachProduct"/>
+        <result column="num_of_5_or_less_checkouts" jdbcType="INTEGER" property="numOf5OrLessCheckouts"/>
+        <result column="specific_rate_range" jdbcType="VARCHAR" property="specificRateRange"/>
+        <result column="frequency_of_change_of_rate" jdbcType="VARCHAR" property="frequencyOfChangeOfRate"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, cus_start_id, cus_end_id, checkout_start_id, checkout_end_id, num_of_checkouts, 
+    num_of_products_in_trolley, time_for_each_product, num_of_5_or_less_checkouts, specific_rate_range, 
+    frequency_of_change_of_rate
+  </sql>
+    <select id="selectByExample" parameterType="com.my.concurrency.models.HistoryExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from histories
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from histories
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from histories
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.my.concurrency.models.HistoryExample">
+        delete from histories
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.my.concurrency.models.History">
+    insert into histories (id, cus_start_id, cus_end_id, 
+      checkout_start_id, checkout_end_id, num_of_checkouts, 
+      num_of_products_in_trolley, time_for_each_product, 
+      num_of_5_or_less_checkouts, specific_rate_range, 
+      frequency_of_change_of_rate)
+    values (#{id,jdbcType=INTEGER}, #{cusStartId,jdbcType=INTEGER}, #{cusEndId,jdbcType=INTEGER}, 
+      #{checkoutStartId,jdbcType=INTEGER}, #{checkoutEndId,jdbcType=INTEGER}, #{numOfCheckouts,jdbcType=INTEGER}, 
+      #{numOfProductsInTrolley,jdbcType=VARCHAR}, #{timeForEachProduct,jdbcType=VARCHAR}, 
+      #{numOf5OrLessCheckouts,jdbcType=INTEGER}, #{specificRateRange,jdbcType=VARCHAR}, 
+      #{frequencyOfChangeOfRate,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.my.concurrency.models.History">
+        insert into histories
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="cusStartId != null">
+                cus_start_id,
+            </if>
+            <if test="cusEndId != null">
+                cus_end_id,
+            </if>
+            <if test="checkoutStartId != null">
+                checkout_start_id,
+            </if>
+            <if test="checkoutEndId != null">
+                checkout_end_id,
+            </if>
+            <if test="numOfCheckouts != null">
+                num_of_checkouts,
+            </if>
+            <if test="numOfProductsInTrolley != null">
+                num_of_products_in_trolley,
+            </if>
+            <if test="timeForEachProduct != null">
+                time_for_each_product,
+            </if>
+            <if test="numOf5OrLessCheckouts != null">
+                num_of_5_or_less_checkouts,
+            </if>
+            <if test="specificRateRange != null">
+                specific_rate_range,
+            </if>
+            <if test="frequencyOfChangeOfRate != null">
+                frequency_of_change_of_rate,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="cusStartId != null">
+                #{cusStartId,jdbcType=INTEGER},
+            </if>
+            <if test="cusEndId != null">
+                #{cusEndId,jdbcType=INTEGER},
+            </if>
+            <if test="checkoutStartId != null">
+                #{checkoutStartId,jdbcType=INTEGER},
+            </if>
+            <if test="checkoutEndId != null">
+                #{checkoutEndId,jdbcType=INTEGER},
+            </if>
+            <if test="numOfCheckouts != null">
+                #{numOfCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="numOfProductsInTrolley != null">
+                #{numOfProductsInTrolley,jdbcType=VARCHAR},
+            </if>
+            <if test="timeForEachProduct != null">
+                #{timeForEachProduct,jdbcType=VARCHAR},
+            </if>
+            <if test="numOf5OrLessCheckouts != null">
+                #{numOf5OrLessCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="specificRateRange != null">
+                #{specificRateRange,jdbcType=VARCHAR},
+            </if>
+            <if test="frequencyOfChangeOfRate != null">
+                #{frequencyOfChangeOfRate,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.my.concurrency.models.HistoryExample" resultType="java.lang.Long">
+        select count(*) from histories
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update histories
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=INTEGER},
+            </if>
+            <if test="record.cusStartId != null">
+                cus_start_id = #{record.cusStartId,jdbcType=INTEGER},
+            </if>
+            <if test="record.cusEndId != null">
+                cus_end_id = #{record.cusEndId,jdbcType=INTEGER},
+            </if>
+            <if test="record.checkoutStartId != null">
+                checkout_start_id = #{record.checkoutStartId,jdbcType=INTEGER},
+            </if>
+            <if test="record.checkoutEndId != null">
+                checkout_end_id = #{record.checkoutEndId,jdbcType=INTEGER},
+            </if>
+            <if test="record.numOfCheckouts != null">
+                num_of_checkouts = #{record.numOfCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="record.numOfProductsInTrolley != null">
+                num_of_products_in_trolley = #{record.numOfProductsInTrolley,jdbcType=VARCHAR},
+            </if>
+            <if test="record.timeForEachProduct != null">
+                time_for_each_product = #{record.timeForEachProduct,jdbcType=VARCHAR},
+            </if>
+            <if test="record.numOf5OrLessCheckouts != null">
+                num_of_5_or_less_checkouts = #{record.numOf5OrLessCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="record.specificRateRange != null">
+                specific_rate_range = #{record.specificRateRange,jdbcType=VARCHAR},
+            </if>
+            <if test="record.frequencyOfChangeOfRate != null">
+                frequency_of_change_of_rate = #{record.frequencyOfChangeOfRate,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update histories
+        set id = #{record.id,jdbcType=INTEGER},
+        cus_start_id = #{record.cusStartId,jdbcType=INTEGER},
+        cus_end_id = #{record.cusEndId,jdbcType=INTEGER},
+        checkout_start_id = #{record.checkoutStartId,jdbcType=INTEGER},
+        checkout_end_id = #{record.checkoutEndId,jdbcType=INTEGER},
+        num_of_checkouts = #{record.numOfCheckouts,jdbcType=INTEGER},
+        num_of_products_in_trolley = #{record.numOfProductsInTrolley,jdbcType=VARCHAR},
+        time_for_each_product = #{record.timeForEachProduct,jdbcType=VARCHAR},
+        num_of_5_or_less_checkouts = #{record.numOf5OrLessCheckouts,jdbcType=INTEGER},
+        specific_rate_range = #{record.specificRateRange,jdbcType=VARCHAR},
+        frequency_of_change_of_rate = #{record.frequencyOfChangeOfRate,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.my.concurrency.models.History">
+        update histories
+        <set>
+            <if test="cusStartId != null">
+                cus_start_id = #{cusStartId,jdbcType=INTEGER},
+            </if>
+            <if test="cusEndId != null">
+                cus_end_id = #{cusEndId,jdbcType=INTEGER},
+            </if>
+            <if test="checkoutStartId != null">
+                checkout_start_id = #{checkoutStartId,jdbcType=INTEGER},
+            </if>
+            <if test="checkoutEndId != null">
+                checkout_end_id = #{checkoutEndId,jdbcType=INTEGER},
+            </if>
+            <if test="numOfCheckouts != null">
+                num_of_checkouts = #{numOfCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="numOfProductsInTrolley != null">
+                num_of_products_in_trolley = #{numOfProductsInTrolley,jdbcType=VARCHAR},
+            </if>
+            <if test="timeForEachProduct != null">
+                time_for_each_product = #{timeForEachProduct,jdbcType=VARCHAR},
+            </if>
+            <if test="numOf5OrLessCheckouts != null">
+                num_of_5_or_less_checkouts = #{numOf5OrLessCheckouts,jdbcType=INTEGER},
+            </if>
+            <if test="specificRateRange != null">
+                specific_rate_range = #{specificRateRange,jdbcType=VARCHAR},
+            </if>
+            <if test="frequencyOfChangeOfRate != null">
+                frequency_of_change_of_rate = #{frequencyOfChangeOfRate,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.my.concurrency.models.History">
+    update histories
+    set cus_start_id = #{cusStartId,jdbcType=INTEGER},
+      cus_end_id = #{cusEndId,jdbcType=INTEGER},
+      checkout_start_id = #{checkoutStartId,jdbcType=INTEGER},
+      checkout_end_id = #{checkoutEndId,jdbcType=INTEGER},
+      num_of_checkouts = #{numOfCheckouts,jdbcType=INTEGER},
+      num_of_products_in_trolley = #{numOfProductsInTrolley,jdbcType=VARCHAR},
+      time_for_each_product = #{timeForEachProduct,jdbcType=VARCHAR},
+      num_of_5_or_less_checkouts = #{numOf5OrLessCheckouts,jdbcType=INTEGER},
+      specific_rate_range = #{specificRateRange,jdbcType=VARCHAR},
+      frequency_of_change_of_rate = #{frequencyOfChangeOfRate,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

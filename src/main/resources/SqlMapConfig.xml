@@ -1,0 +1,39 @@
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <settings>
+        <setting name="useGeneratedKeys" value="false"/>
+    </settings>
+
+    <!-- Use type aliases to avoid typing the full classname every time. -->
+    <!--<typeAliases>-->
+    <!--<typeAlias alias="User" type="com.my.learnMybatis.bean.User"/>-->
+    <!--</typeAliases>-->
+
+    <!-- setup environment with JDBC data source -->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url"
+                          value="jdbc:mysql://localhost:3306/concurrency?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
+                <property name="username" value="arthur"/>
+                <property name="password" value="6328349"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+    <!-- mapping files -->
+    <!--resouces开始扫描的目录就是从maven的main\resources下开始扫描-->
+    <mappers>
+        <mapper resource="mappers/CheckoutMapper.xml"/>
+        <mapper resource="mappers/CustomerMapper.xml"/>
+        <mapper resource="mappers/HistoryMapper.xml"/>
+    </mappers>
+
+</configuration>

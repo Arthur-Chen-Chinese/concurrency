@@ -1,0 +1,77 @@
+JFDML JFormDesigner: "6.0.4.1.172" Java: "1.8.0_152-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :::p, comp tabbedPane1:::::x, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp tabbedPane1:::::x, space :::p}}"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+				name: "tabbedPane1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {par l {seq l {space :::p, comp panel4:::::x}, seq l {comp panel5:::p::p, space :::p, comp panel6:::p:202:p}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {comp panel4:::p::p, space :::p, par l {comp panel5:::p::p, comp panel6:::p:228:p}, space ::7:x}}"
+				} ) {
+					name: "panel1"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:0:x}"
+						"$verticalGroup": "par l {space :0:299:x}"
+					} ) {
+						name: "panel4"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:716:x}"
+						"$verticalGroup": "par l {space :0:228:x}"
+					} ) {
+						name: "panel5"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+						"rows": 2
+						"columns": 1
+					} ) {
+						name: "panel6"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnStartSimulating"
+							"text": "Start Simulating"
+							"toolTipText": "Start"
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "btnEndandShowStatistics"
+							"text": "End and Show Statistics"
+						} )
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "text"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {space :::p, par l {seq {comp scrollPane2:::p:547:p, space :::p, comp panel8:::::x}, comp scrollPane1::::918:x}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, par l:::p {comp scrollPane2::::290:x, comp panel8:::::x}, space :::p, comp scrollPane1::::238:x}}"
+				} ) {
+					name: "panel2"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+						"$horizontalGroup": "par l {space :0:365:x}"
+						"$verticalGroup": "par l {space :0:290:x}"
+					} ) {
+						name: "panel8"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormComponent( "javax.swing.JTable" ) {
+							name: "table1"
+						} )
+					} )
+				}, new FormLayoutConstraints( null ) {
+					"title": "text"
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 755, 506 )
+		} )
+	}
+}

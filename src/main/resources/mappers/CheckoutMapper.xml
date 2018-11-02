@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.concurrency.dao.CheckoutMapper">
+    <resultMap id="BaseResultMap" type="com.my.concurrency.models.Checkout">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="started_time" jdbcType="TIMESTAMP" property="startedTime"/>
+        <result column="finished_time" jdbcType="TIMESTAMP" property="finishedTime"/>
+        <result column="num_of_checked_customers" jdbcType="INTEGER" property="numOfCheckedCustomers"/>
+        <result column="num_of_checked_items" jdbcType="INTEGER" property="numOfCheckedItems"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+    id, name, started_time, finished_time, num_of_checked_customers, num_of_checked_items
+  </sql>
+    <select id="selectByExample" parameterType="com.my.concurrency.models.CheckoutExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from checkouts
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from checkouts
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from checkouts
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.my.concurrency.models.CheckoutExample">
+        delete from checkouts
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.my.concurrency.models.Checkout">
+    insert into checkouts (id, name, started_time, 
+      finished_time, num_of_checked_customers, 
+      num_of_checked_items)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{startedTime,jdbcType=TIMESTAMP}, 
+      #{finishedTime,jdbcType=TIMESTAMP}, #{numOfCheckedCustomers,jdbcType=INTEGER}, 
+      #{numOfCheckedItems,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.my.concurrency.models.Checkout">
+        insert into checkouts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="startedTime != null">
+                started_time,
+            </if>
+            <if test="finishedTime != null">
+                finished_time,
+            </if>
+            <if test="numOfCheckedCustomers != null">
+                num_of_checked_customers,
+            </if>
+            <if test="numOfCheckedItems != null">
+                num_of_checked_items,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="startedTime != null">
+                #{startedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishedTime != null">
+                #{finishedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="numOfCheckedCustomers != null">
+                #{numOfCheckedCustomers,jdbcType=INTEGER},
+            </if>
+            <if test="numOfCheckedItems != null">
+                #{numOfCheckedItems,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.my.concurrency.models.CheckoutExample" resultType="java.lang.Long">
+        select count(*) from checkouts
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update checkouts
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=INTEGER},
+            </if>
+            <if test="record.name != null">
+                name = #{record.name,jdbcType=VARCHAR},
+            </if>
+            <if test="record.startedTime != null">
+                started_time = #{record.startedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.finishedTime != null">
+                finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.numOfCheckedCustomers != null">
+                num_of_checked_customers = #{record.numOfCheckedCustomers,jdbcType=INTEGER},
+            </if>
+            <if test="record.numOfCheckedItems != null">
+                num_of_checked_items = #{record.numOfCheckedItems,jdbcType=INTEGER},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update checkouts
+        set id = #{record.id,jdbcType=INTEGER},
+        name = #{record.name,jdbcType=VARCHAR},
+        started_time = #{record.startedTime,jdbcType=TIMESTAMP},
+        finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
+        num_of_checked_customers = #{record.numOfCheckedCustomers,jdbcType=INTEGER},
+        num_of_checked_items = #{record.numOfCheckedItems,jdbcType=INTEGER}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.my.concurrency.models.Checkout">
+        update checkouts
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="startedTime != null">
+                started_time = #{startedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishedTime != null">
+                finished_time = #{finishedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="numOfCheckedCustomers != null">
+                num_of_checked_customers = #{numOfCheckedCustomers,jdbcType=INTEGER},
+            </if>
+            <if test="numOfCheckedItems != null">
+                num_of_checked_items = #{numOfCheckedItems,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.my.concurrency.models.Checkout">
+    update checkouts
+    set name = #{name,jdbcType=VARCHAR},
+      started_time = #{startedTime,jdbcType=TIMESTAMP},
+      finished_time = #{finishedTime,jdbcType=TIMESTAMP},
+      num_of_checked_customers = #{numOfCheckedCustomers,jdbcType=INTEGER},
+      num_of_checked_items = #{numOfCheckedItems,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
