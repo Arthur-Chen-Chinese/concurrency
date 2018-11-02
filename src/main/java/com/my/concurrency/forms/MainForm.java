@@ -29,10 +29,13 @@ public class MainForm extends JFrame {
         panel2 = new JPanel();
         panel8 = new JPanel();
         scrollPane1 = new JScrollPane();
+        table2 = new JTable();
         scrollPane2 = new JScrollPane();
         table1 = new JTable();
 
         //======== this ========
+        setTitle("Supermaket Simulator");
+        setResizable(false);
         Container contentPane = getContentPane();
 
         //======== tabbedPane1 ========
@@ -131,6 +134,11 @@ public class MainForm extends JFrame {
                     );
                 }
 
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setViewportView(table2);
+                }
+
                 //======== scrollPane2 ========
                 {
                     scrollPane2.setViewportView(table1);
@@ -177,7 +185,7 @@ public class MainForm extends JFrame {
                 contentPaneLayout.createParallelGroup()
                         .addGroup(contentPaneLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(tabbedPane1)
+                                .addComponent(tabbedPane1, GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
                                 .addContainerGap())
         );
         pack();
@@ -196,6 +204,7 @@ public class MainForm extends JFrame {
     private JPanel panel2;
     private JPanel panel8;
     private JScrollPane scrollPane1;
+    private JTable table2;
     private JScrollPane scrollPane2;
     private JTable table1;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
