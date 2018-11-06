@@ -6,47 +6,55 @@ public class FastForward {
     /**
      * The unit is millisecond
      */
-    private final int timeToCheckoutFrom = 500;
-    private int timeToCheckoutTo = 1000;
-    private int timeToGenerateACustomer = 12000;
+    private final static int timeToCheckoutFrom = 500;
+    private static int timeToCheckoutTo = 1000;
+    private static int timeToGenerateACustomer = 12000;
 
     /**
      * The unit is single.
      */
-    private int fast = 1;
+    private static int fast = 1;
 
     public static int TimeToCheckout = 0;
     public static int TimeToGenerateACustomer = 1;
 
-    public int getTimeToCheckoutFrom() {
+    public static int getTimeToCheckoutFrom() {
         return timeToCheckoutFrom;
     }
 
-    public int getTimeToCheckoutTo() {
+    public static int getTimeToCheckoutTo() {
         return timeToCheckoutTo;
     }
 
-    public void setTimeToCheckoutTo(int timeToCheckoutTo) {
-        this.timeToCheckoutTo = timeToCheckoutTo;
+    public static void setTimeToCheckoutTo(int timeToCheckoutTo) {
+        FastForward.timeToCheckoutTo = timeToCheckoutTo;
     }
 
-    public int getTimeToGenerateACustomer() {
+    public static int getTimeToGenerateACustomer() {
         return timeToGenerateACustomer;
     }
 
-    public void setTimeToGenerateACustomer(int timeToGenerateACustomer) {
-        this.timeToGenerateACustomer = timeToGenerateACustomer;
+    public static void setTimeToGenerateACustomer(int timeToGenerateACustomer) {
+        FastForward.timeToGenerateACustomer = timeToGenerateACustomer;
     }
 
-    public int getFast() {
+    public static int getFast() {
         return fast;
     }
 
-    public void setFast(int fast) {
-        this.fast = fast;
+    public static void setFast(int fast) {
+        FastForward.fast = fast;
     }
 
-    public int generateTimeByFast(int generateType) {
+    public static int getTimeToCheckout() {
+        return TimeToCheckout;
+    }
+
+    public static void setTimeToCheckout(int timeToCheckout) {
+        TimeToCheckout = timeToCheckout;
+    }
+
+    public static int generateTimeByFast(int generateType) {
         int time = 0;
         Random random = new Random(System.currentTimeMillis());
         switch (generateType) {

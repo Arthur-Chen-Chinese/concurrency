@@ -18,7 +18,7 @@ new FormModel {
 				} ) {
 					name: "panel1"
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq l {comp panel5:::p:20:p, space :0:0:p, comp pnlCheckoutsPlaceHolder::::60:x, space :0:0:p, comp panel9::::566:x, space :0:0:p}}"
+						"$horizontalGroup": "par l {seq l {comp panel5:::p:20:p, space :0:0:p, comp pnlCheckoutsPlaceHolder::::110:x, space :0:0:p, comp panel9::::616:x, space :0:0:p}}"
 						"$verticalGroup": "par l {comp panel5::::581:x, comp pnlCheckoutsPlaceHolder::l::581:x, comp panel9::t::581:x}"
 					} ) {
 						name: "panel4"
@@ -98,53 +98,54 @@ new FormModel {
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 1
 							} ) {
-								name: "panel11"
+								name: "pnl"
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label9"
 									"text": "Waiting Line"
-									"horizontalAlignment": 0
 									"border": new javax.swing.border.MatteBorder( 0, 0, 2, 0, sfield java.awt.Color black )
+									"horizontalAlignment": 0
+									"horizontalTextPosition": 4
 								} )
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel12"
+								name: "pnlWL1"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel13"
+								name: "pnlWL2"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel14"
+								name: "pnlWL3"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel15"
+								name: "pnlWL4"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel16"
+								name: "pnlWL5"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel17"
+								name: "pnlWL6"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel10"
+								name: "pnlWL7"
 							} )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 6
 							} ) {
-								name: "panel18"
+								name: "pnlWL8"
 							} )
 						} )
 					} )
@@ -157,6 +158,7 @@ new FormModel {
 							name: "btnStartSimulating"
 							"text": "Start Simulating"
 							"toolTipText": "Start"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnStartSimulatingActionPerformed", true ) )
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "btnEndandShowStatistics"
@@ -164,8 +166,8 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp label1:::::x, comp cbNoOfCheckouts:::::x, seq t {space :0:0:x, par l {comp label5:::p:246:p, comp cbCustomerArrivalRate:::p:246:p}}, seq {par l {comp label2:::p:246:p, comp cbNoOfProducts:::p:246:p, comp label3:::p:246:p, comp cbTimeToCheckAProduct:::p:246:p, comp label4:::p:246:p, comp cbNoOf5OrLess:::p:246:p, comp label7:::p:246:p, comp cbFastForward:::p:246:p}, space :0:0:x}}, space :::p}}"
-						"$verticalGroup": "par l {seq l {space :::p, comp label1:::p::p, space :::p, comp cbNoOfCheckouts:::p:30:p, space :::p, comp label2:::p::p, space :6:6:p, comp cbNoOfProducts:::p:30:p, space :::p, comp label3:::p::p, space :6:6:p, comp cbTimeToCheckAProduct:::p:30:p, space :::p, comp label4:::p::p, space :6:6:p, comp cbNoOf5OrLess:::p:30:p, space :::p, comp label5:::p::p, space :6:6:p, comp cbCustomerArrivalRate:::p:30:p, space :::p, comp label7:::p::p, space :6:6:p, comp cbFastForward:::p:30:p, space ::50:x}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp label1:::::x, comp cbNoOfCheckouts:::::x, seq t {space :0:0:x, par l {comp label5:::p:246:p, comp cbCustomerArrivalRate:::p:246:p}}, seq {par l {comp label2:::p:246:p, comp tfNoOfProducts:::p:246:p, comp label3:::p:246:p, comp cbTimeToCheckAProduct:::p:246:p, comp label4:::p:246:p, comp cbNoOf5OrLess:::p:246:p, comp label7:::p:246:p, comp cbFastForward:::p:246:p}, space :0:0:x}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp label1:::p::p, space :::p, comp cbNoOfCheckouts:::p:30:p, space :::p, comp label2:::p::p, space :6:6:p, comp tfNoOfProducts:::p:30:p, space :::p, comp label3:::p::p, space :6:6:p, comp cbTimeToCheckAProduct:::p:30:p, space :::p, comp label4:::p::p, space :6:6:p, comp cbNoOf5OrLess:::p:30:p, space :::p, comp label5:::p::p, space :6:6:p, comp cbCustomerArrivalRate:::p:30:p, space :::p, comp label7:::p::p, space :6:6:p, comp cbFastForward:::p:30:p, space ::50:x}}"
 					} ) {
 						name: "panel3"
 						add( new FormComponent( "javax.swing.JLabel" ) {
@@ -180,7 +182,7 @@ new FormModel {
 							"text": "No. of products in a trolley (1-200)"
 						} )
 						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "cbNoOfProducts"
+							name: "tfNoOfProducts"
 							"text": "30"
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
@@ -216,12 +218,12 @@ new FormModel {
 					"title": "Simulator"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq {space :::p, par l {seq {comp scrollPane2:::p:547:p, space :::p, comp panel8:::::x}, comp scrollPane1::::918:x}, space :::p}}"
+					"$horizontalGroup": "par l {seq {space :::p, par l {seq {comp scrollPane2:::p:547:p, space :::p, comp panel8:::::x}, comp scrollPane1::::1018:x}, space :::p}}"
 					"$verticalGroup": "par l {seq l {space :::p, par l:::p {comp scrollPane2::::290:x, comp panel8:::::x}, space :::p, comp scrollPane1::::293:x}}"
 				} ) {
 					name: "panel2"
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {space :0:365:x}"
+						"$horizontalGroup": "par l {space :0:465:x}"
 						"$verticalGroup": "par l {space :0:290:x}"
 					} ) {
 						name: "panel8"
@@ -244,7 +246,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 755, 550 )
+			"size": new java.awt.Dimension( 835, 550 )
 		} )
 	}
 }

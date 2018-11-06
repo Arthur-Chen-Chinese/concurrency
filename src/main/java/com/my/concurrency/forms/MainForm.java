@@ -10,7 +10,12 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.regex.Pattern;
 
 /**
  * @author Brainrain
@@ -19,24 +24,40 @@ public class MainForm extends JFrame {
 
     private ArrayList<JLabel> checkoutList = new ArrayList<>();
     private ArrayList<JPanel> waitingLineList = new ArrayList<>();
-    private Customer customerLists[][];
-    private Customer customerWaitingLists[][];
+    private List<Customer> customerList = new ArrayList<>();   //customer generated
+    private Queue<Customer>[] customerWaitingLists = new Queue[8];   //customer already in supermarket
     public final static String picPathCheckoutAvaiable = "src\\main\\resources\\pics\\checkout_available.png";
     public final static String picPathCheckoutUnavaiable = "src\\main\\resources\\pics\\checkout_unavailable.png";
     public final static String picPathCheckoutBusy = "src\\main\\resources\\pics\\checkout_busy.png";
     public final static String picPathCustomer = "src\\main\\resources\\pics\\customer.png";
+    public static int CheckoutAvaiableStatus = 0;
+    public static int CheckoutUnavaiableStatus = 1;
+    public static int CheckoutBusyStatus = 2;
+    private ImageIcon iconCheckoutUnavaiable = new ImageIcon(picPathCheckoutUnavaiable);
+    private ImageIcon iconCheckoutAvaiable = new ImageIcon(picPathCheckoutAvaiable);
+    private ImageIcon iconCheckoutBusy = new ImageIcon(picPathCheckoutBusy);
+    private ImageIcon iconCustomer = new ImageIcon(picPathCustomer);
 
     public MainForm() {
         initComponents();
         initCustomompnents();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        waitingLineList.add(pnlWL1);
+        waitingLineList.add(pnlWL2);
+        waitingLineList.add(pnlWL3);
+        waitingLineList.add(pnlWL4);
+        waitingLineList.add(pnlWL5);
+        waitingLineList.add(pnlWL6);
+        waitingLineList.add(pnlWL7);
+        waitingLineList.add(pnlWL8);
     }
 
     private void initCustomompnents() {
 
         for (int i = 0; i < 8; i++) {
-            JLabel lbCheckout = new JLabel(new ImageIcon(picPathCheckoutUnavaiable));
+
+            JLabel lbCheckout = new JLabel(iconCheckoutUnavaiable);
             checkoutList.add(lbCheckout);
             pnlCheckoutsPlaceHolder.add(lbCheckout);
         }
@@ -72,6 +93,63 @@ public class MainForm extends JFrame {
 
     }
 
+    private void btnStartSimulatingActionPerformed(ActionEvent e) {
+        //conformation of input
+        String regex = "^[0-9]*$";
+
+        boolean matchFlag = Pattern.matches(regex, tfNoOfProducts.getText());
+        if (!matchFlag) {
+            JOptionPane.showMessageDialog(null, "Please input a integer from 1 to 200 in \"No.of product in trolley\" input box", "标题", JOptionPane.ERROR_MESSAGE);
+        } else {
+            int range = Integer.parseInt(tfNoOfProducts.getText());
+            if (range > 200 || range <= 0) {
+                JOptionPane.showMessageDialog(null, "Please input a integer from 1 to 200 in \"No.of product in trolley\" input box", "标题", JOptionPane.ERROR_MESSAGE);
+            }
+
+        }
+    }
+
+    public void updateCheckout(int numOfCheckout, int checkoutStatus) {
+        JLabel jLabel = checkoutList.get(numOfCheckout - 1);
+        switch (checkoutStatus) {
+            case 0:
+                jLabel.setIcon(iconCheckoutAvaiable);
+                break;
+            case 1:
+                jLabel.setIcon(iconCheckoutUnavaiable);
+                break;
+            case 2:
+                jLabel.setIcon(iconCheckoutBusy);
+                break;
+        }
+    }
+
+    public void updateWaitingLine(int numOfCheckout, Customer customer) {
+        if (customer == null) {
+            JPanel jPanel = waitingLineList.get(numOfCheckout - 1);
+            jPanel.removeAll();
+            Queue<Customer> customerWaitingList;
+            synchronized (customerWaitingLists) {
+                customerWaitingList = customerWaitingLists[numOfCheckout - 1];
+                for (Customer cus : customerWaitingList
+                ) {
+                    JLabel l = new JLabel(iconCustomer);
+                    l.setHorizontalTextPosition(SwingConstants.RIGHT);
+                    l.setText("" + cus.getNumOfProducts());
+                    jPanel.add(l);
+                }
+            }
+            jPanel.repaint();
+        } else {
+            JPanel jPanel = waitingLineList.get(numOfCheckout - 1);
+            JLabel l = new JLabel(iconCustomer);
+            l.setHorizontalTextPosition(SwingConstants.RIGHT);
+            l.setText("" + customer.getNumOfProducts());
+            jPanel.add(l);
+            jPanel.repaint();
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         tabbedPane1 = new JTabbedPane();
@@ -90,16 +168,16 @@ public class MainForm extends JFrame {
         pnlCheckoutsPlaceHolder = new JPanel();
         label8 = new JLabel();
         panel9 = new JPanel();
-        panel11 = new JPanel();
+        pnl = new JPanel();
         label9 = new JLabel();
-        panel12 = new JPanel();
-        panel13 = new JPanel();
-        panel14 = new JPanel();
-        panel15 = new JPanel();
-        panel16 = new JPanel();
-        panel17 = new JPanel();
-        panel10 = new JPanel();
-        panel18 = new JPanel();
+        pnlWL1 = new JPanel();
+        pnlWL2 = new JPanel();
+        pnlWL3 = new JPanel();
+        pnlWL4 = new JPanel();
+        pnlWL5 = new JPanel();
+        pnlWL6 = new JPanel();
+        pnlWL7 = new JPanel();
+        pnlWL8 = new JPanel();
         panel6 = new JPanel();
         btnStartSimulating = new JButton();
         btnEndandShowStatistics = new JButton();
@@ -107,7 +185,7 @@ public class MainForm extends JFrame {
         label1 = new JLabel();
         cbNoOfCheckouts = new JComboBox();
         label2 = new JLabel();
-        cbNoOfProducts = new JTextField();
+        tfNoOfProducts = new JTextField();
         label3 = new JLabel();
         cbTimeToCheckAProduct = new JComboBox();
         label4 = new JLabel();
@@ -207,65 +285,66 @@ public class MainForm extends JFrame {
                         panel9.setBorder(LineBorder.createBlackLineBorder());
                         panel9.setLayout(new GridLayout(9, 1));
 
-                        //======== panel11 ========
+                        //======== pnl ========
                         {
-                            panel11.setLayout(new GridLayout(1, 1));
+                            pnl.setLayout(new GridLayout(1, 1));
 
                             //---- label9 ----
                             label9.setText("Waiting Line");
-                            label9.setHorizontalAlignment(SwingConstants.CENTER);
                             label9.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
-                            panel11.add(label9);
+                            label9.setHorizontalAlignment(SwingConstants.CENTER);
+                            label9.setHorizontalTextPosition(SwingConstants.RIGHT);
+                            pnl.add(label9);
                         }
-                        panel9.add(panel11);
+                        panel9.add(pnl);
 
-                        //======== panel12 ========
+                        //======== pnlWL1 ========
                         {
-                            panel12.setLayout(new GridLayout(1, 6));
+                            pnlWL1.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel12);
+                        panel9.add(pnlWL1);
 
-                        //======== panel13 ========
+                        //======== pnlWL2 ========
                         {
-                            panel13.setLayout(new GridLayout(1, 6));
+                            pnlWL2.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel13);
+                        panel9.add(pnlWL2);
 
-                        //======== panel14 ========
+                        //======== pnlWL3 ========
                         {
-                            panel14.setLayout(new GridLayout(1, 6));
+                            pnlWL3.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel14);
+                        panel9.add(pnlWL3);
 
-                        //======== panel15 ========
+                        //======== pnlWL4 ========
                         {
-                            panel15.setLayout(new GridLayout(1, 6));
+                            pnlWL4.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel15);
+                        panel9.add(pnlWL4);
 
-                        //======== panel16 ========
+                        //======== pnlWL5 ========
                         {
-                            panel16.setLayout(new GridLayout(1, 6));
+                            pnlWL5.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel16);
+                        panel9.add(pnlWL5);
 
-                        //======== panel17 ========
+                        //======== pnlWL6 ========
                         {
-                            panel17.setLayout(new GridLayout(1, 6));
+                            pnlWL6.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel17);
+                        panel9.add(pnlWL6);
 
-                        //======== panel10 ========
+                        //======== pnlWL7 ========
                         {
-                            panel10.setLayout(new GridLayout(1, 6));
+                            pnlWL7.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel10);
+                        panel9.add(pnlWL7);
 
-                        //======== panel18 ========
+                        //======== pnlWL8 ========
                         {
-                            panel18.setLayout(new GridLayout(1, 6));
+                            pnlWL8.setLayout(new GridLayout(1, 6));
                         }
-                        panel9.add(panel18);
+                        panel9.add(pnlWL8);
                     }
 
                     GroupLayout panel4Layout = new GroupLayout(panel4);
@@ -275,9 +354,9 @@ public class MainForm extends JFrame {
                                     .addGroup(panel4Layout.createSequentialGroup()
                                             .addComponent(panel5, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
                                             .addGap(0, 0, 0)
-                                            .addComponent(pnlCheckoutsPlaceHolder, GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
+                                            .addComponent(pnlCheckoutsPlaceHolder, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
                                             .addGap(0, 0, 0)
-                                            .addComponent(panel9, GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
+                                            .addComponent(panel9, GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
                                             .addGap(0, 0, 0))
                     );
                     panel4Layout.setVerticalGroup(
@@ -295,6 +374,12 @@ public class MainForm extends JFrame {
                     //---- btnStartSimulating ----
                     btnStartSimulating.setText("Start Simulating");
                     btnStartSimulating.setToolTipText("Start");
+                    btnStartSimulating.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            btnStartSimulatingActionPerformed(e);
+                        }
+                    });
                     panel6.add(btnStartSimulating);
 
                     //---- btnEndandShowStatistics ----
@@ -311,8 +396,8 @@ public class MainForm extends JFrame {
                     //---- label2 ----
                     label2.setText("No. of products in a trolley (1-200)");
 
-                    //---- cbNoOfProducts ----
-                    cbNoOfProducts.setText("30");
+                    //---- tfNoOfProducts ----
+                    tfNoOfProducts.setText("30");
 
                     //---- label3 ----
                     label3.setText("Time to check a product (0.5-6s)");
@@ -343,7 +428,7 @@ public class MainForm extends JFrame {
                                                     .addGroup(panel3Layout.createSequentialGroup()
                                                             .addGroup(panel3Layout.createParallelGroup()
                                                                     .addComponent(label2, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(cbNoOfProducts, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                    .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
                                                                     .addComponent(label3, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
                                                                     .addComponent(cbTimeToCheckAProduct, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
                                                                     .addComponent(label4, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
@@ -363,7 +448,7 @@ public class MainForm extends JFrame {
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(label2)
                                             .addGap(6, 6, 6)
-                                            .addComponent(cbNoOfProducts, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(label3)
                                             .addGap(6, 6, 6)
@@ -422,7 +507,7 @@ public class MainForm extends JFrame {
                     panel8.setLayout(panel8Layout);
                     panel8Layout.setHorizontalGroup(
                             panel8Layout.createParallelGroup()
-                                    .addGap(0, 365, Short.MAX_VALUE)
+                                    .addGap(0, 465, Short.MAX_VALUE)
                     );
                     panel8Layout.setVerticalGroup(
                             panel8Layout.createParallelGroup()
@@ -451,7 +536,7 @@ public class MainForm extends JFrame {
                                                         .addComponent(scrollPane2, GroupLayout.PREFERRED_SIZE, 547, GroupLayout.PREFERRED_SIZE)
                                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(panel8, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 918, Short.MAX_VALUE))
+                                                .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 1018, Short.MAX_VALUE))
                                         .addContainerGap())
                 );
                 panel2Layout.setVerticalGroup(
@@ -506,16 +591,16 @@ public class MainForm extends JFrame {
     private JPanel pnlCheckoutsPlaceHolder;
     private JLabel label8;
     private JPanel panel9;
-    private JPanel panel11;
+    private JPanel pnl;
     private JLabel label9;
-    private JPanel panel12;
-    private JPanel panel13;
-    private JPanel panel14;
-    private JPanel panel15;
-    private JPanel panel16;
-    private JPanel panel17;
-    private JPanel panel10;
-    private JPanel panel18;
+    private JPanel pnlWL1;
+    private JPanel pnlWL2;
+    private JPanel pnlWL3;
+    private JPanel pnlWL4;
+    private JPanel pnlWL5;
+    private JPanel pnlWL6;
+    private JPanel pnlWL7;
+    private JPanel pnlWL8;
     private JPanel panel6;
     private JButton btnStartSimulating;
     private JButton btnEndandShowStatistics;
@@ -523,7 +608,7 @@ public class MainForm extends JFrame {
     private JLabel label1;
     private JComboBox cbNoOfCheckouts;
     private JLabel label2;
-    private JTextField cbNoOfProducts;
+    private JTextField tfNoOfProducts;
     private JLabel label3;
     private JComboBox cbTimeToCheckAProduct;
     private JLabel label4;
