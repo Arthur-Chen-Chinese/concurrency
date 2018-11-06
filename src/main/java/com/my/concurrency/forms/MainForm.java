@@ -69,6 +69,7 @@ public class MainForm extends JFrame {
             cbFastForward.addItem(((2 << i)) + postfixOfFastForward);
         }
 
+
     }
 
     private void initComponents() {
