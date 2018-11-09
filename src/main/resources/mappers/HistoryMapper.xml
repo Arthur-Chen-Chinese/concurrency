@@ -12,7 +12,6 @@
         <result column="time_for_each_product" jdbcType="VARCHAR" property="timeForEachProduct"/>
         <result column="num_of_5_or_less_checkouts" jdbcType="INTEGER" property="numOf5OrLessCheckouts"/>
         <result column="specific_rate_range" jdbcType="VARCHAR" property="specificRateRange"/>
-        <result column="frequency_of_change_of_rate" jdbcType="VARCHAR" property="frequencyOfChangeOfRate"/>
     </resultMap>
     <sql id="Example_Where_Clause">
         <where>
@@ -75,9 +74,8 @@
         </where>
     </sql>
     <sql id="Base_Column_List">
-    id, cus_start_id, cus_end_id, checkout_start_id, checkout_end_id, num_of_checkouts, 
-    num_of_products_in_trolley, time_for_each_product, num_of_5_or_less_checkouts, specific_rate_range, 
-    frequency_of_change_of_rate
+    id, cus_start_id, cus_end_id, checkout_start_id, checkout_end_id, num_of_checkouts,
+    num_of_products_in_trolley, time_for_each_product, num_of_5_or_less_checkouts, specific_rate_range
   </sql>
     <select id="selectByExample" parameterType="com.my.concurrency.models.HistoryExample" resultMap="BaseResultMap">
         select
@@ -110,16 +108,16 @@
         </if>
     </delete>
     <insert id="insert" parameterType="com.my.concurrency.models.History">
-    insert into histories (id, cus_start_id, cus_end_id, 
-      checkout_start_id, checkout_end_id, num_of_checkouts, 
-      num_of_products_in_trolley, time_for_each_product, 
-      num_of_5_or_less_checkouts, specific_rate_range, 
-      frequency_of_change_of_rate)
-    values (#{id,jdbcType=INTEGER}, #{cusStartId,jdbcType=INTEGER}, #{cusEndId,jdbcType=INTEGER}, 
-      #{checkoutStartId,jdbcType=INTEGER}, #{checkoutEndId,jdbcType=INTEGER}, #{numOfCheckouts,jdbcType=INTEGER}, 
-      #{numOfProductsInTrolley,jdbcType=VARCHAR}, #{timeForEachProduct,jdbcType=VARCHAR}, 
-      #{numOf5OrLessCheckouts,jdbcType=INTEGER}, #{specificRateRange,jdbcType=VARCHAR}, 
-      #{frequencyOfChangeOfRate,jdbcType=VARCHAR})
+    insert into histories (id, cus_start_id, cus_end_id,
+                           checkout_start_id, checkout_end_id, num_of_checkouts,
+                           num_of_products_in_trolley, time_for_each_product,
+                           num_of_5_or_less_checkouts,
+                           specific_rate_range)
+    values (#{id,jdbcType=INTEGER}, #{cusStartId,jdbcType=INTEGER}, #{cusEndId,jdbcType=INTEGER},
+            #{checkoutStartId,jdbcType=INTEGER}, #{checkoutEndId,jdbcType=INTEGER}, #{numOfCheckouts,jdbcType=INTEGER},
+            #{numOfProductsInTrolley,jdbcType=VARCHAR}, #{timeForEachProduct,jdbcType=VARCHAR},
+            #{numOf5OrLessCheckouts,jdbcType=INTEGER},
+            #{specificRateRange,jdbcType=VARCHAR})
   </insert>
     <insert id="insertSelective" parameterType="com.my.concurrency.models.History">
         insert into histories
@@ -154,9 +152,6 @@
             <if test="specificRateRange != null">
                 specific_rate_range,
             </if>
-            <if test="frequencyOfChangeOfRate != null">
-                frequency_of_change_of_rate,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -188,9 +183,6 @@
             </if>
             <if test="specificRateRange != null">
                 #{specificRateRange,jdbcType=VARCHAR},
-            </if>
-            <if test="frequencyOfChangeOfRate != null">
-                #{frequencyOfChangeOfRate,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -233,9 +225,6 @@
             <if test="record.specificRateRange != null">
                 specific_rate_range = #{record.specificRateRange,jdbcType=VARCHAR},
             </if>
-            <if test="record.frequencyOfChangeOfRate != null">
-                frequency_of_change_of_rate = #{record.frequencyOfChangeOfRate,jdbcType=VARCHAR},
-            </if>
         </set>
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
@@ -252,8 +241,7 @@
         num_of_products_in_trolley = #{record.numOfProductsInTrolley,jdbcType=VARCHAR},
         time_for_each_product = #{record.timeForEachProduct,jdbcType=VARCHAR},
         num_of_5_or_less_checkouts = #{record.numOf5OrLessCheckouts,jdbcType=INTEGER},
-        specific_rate_range = #{record.specificRateRange,jdbcType=VARCHAR},
-        frequency_of_change_of_rate = #{record.frequencyOfChangeOfRate,jdbcType=VARCHAR}
+        specific_rate_range = #{record.specificRateRange,jdbcType=VARCHAR}
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
         </if>
@@ -288,24 +276,20 @@
             <if test="specificRateRange != null">
                 specific_rate_range = #{specificRateRange,jdbcType=VARCHAR},
             </if>
-            <if test="frequencyOfChangeOfRate != null">
-                frequency_of_change_of_rate = #{frequencyOfChangeOfRate,jdbcType=VARCHAR},
-            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.my.concurrency.models.History">
     update histories
-    set cus_start_id = #{cusStartId,jdbcType=INTEGER},
-      cus_end_id = #{cusEndId,jdbcType=INTEGER},
-      checkout_start_id = #{checkoutStartId,jdbcType=INTEGER},
-      checkout_end_id = #{checkoutEndId,jdbcType=INTEGER},
-      num_of_checkouts = #{numOfCheckouts,jdbcType=INTEGER},
-      num_of_products_in_trolley = #{numOfProductsInTrolley,jdbcType=VARCHAR},
-      time_for_each_product = #{timeForEachProduct,jdbcType=VARCHAR},
-      num_of_5_or_less_checkouts = #{numOf5OrLessCheckouts,jdbcType=INTEGER},
-      specific_rate_range = #{specificRateRange,jdbcType=VARCHAR},
-      frequency_of_change_of_rate = #{frequencyOfChangeOfRate,jdbcType=VARCHAR}
+    set cus_start_id               = #{cusStartId,jdbcType=INTEGER},
+        cus_end_id                 = #{cusEndId,jdbcType=INTEGER},
+        checkout_start_id          = #{checkoutStartId,jdbcType=INTEGER},
+        checkout_end_id            = #{checkoutEndId,jdbcType=INTEGER},
+        num_of_checkouts           = #{numOfCheckouts,jdbcType=INTEGER},
+        num_of_products_in_trolley = #{numOfProductsInTrolley,jdbcType=VARCHAR},
+        time_for_each_product      = #{timeForEachProduct,jdbcType=VARCHAR},
+        num_of_5_or_less_checkouts = #{numOf5OrLessCheckouts,jdbcType=INTEGER},
+        specific_rate_range        = #{specificRateRange,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

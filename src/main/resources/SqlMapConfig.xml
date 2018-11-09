@@ -33,6 +33,7 @@
     <mappers>
         <mapper resource="mappers/CheckoutMapper.xml"/>
         <mapper resource="mappers/CustomerMapper.xml"/>
+        <mapper resource="mappers/CustomerCustomMapper.xml"/>
         <mapper resource="mappers/HistoryMapper.xml"/>
     </mappers>
 

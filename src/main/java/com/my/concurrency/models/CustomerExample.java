@@ -524,6 +524,66 @@ public class CustomerExample {
             addCriterion("check_end_time not between", value1, value2, "checkEndTime");
             return (Criteria) this;
         }
+
+        public Criteria andCheckoutIdIsNull() {
+            addCriterion("checkout_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdIsNotNull() {
+            addCriterion("checkout_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdEqualTo(Integer value) {
+            addCriterion("checkout_id =", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdNotEqualTo(Integer value) {
+            addCriterion("checkout_id <>", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdGreaterThan(Integer value) {
+            addCriterion("checkout_id >", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("checkout_id >=", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdLessThan(Integer value) {
+            addCriterion("checkout_id <", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdLessThanOrEqualTo(Integer value) {
+            addCriterion("checkout_id <=", value, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdIn(List<Integer> values) {
+            addCriterion("checkout_id in", values, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdNotIn(List<Integer> values) {
+            addCriterion("checkout_id not in", values, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdBetween(Integer value1, Integer value2) {
+            addCriterion("checkout_id between", value1, value2, "checkoutId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckoutIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("checkout_id not between", value1, value2, "checkoutId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

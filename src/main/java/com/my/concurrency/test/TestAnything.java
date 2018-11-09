@@ -1,5 +1,8 @@
 package com.my.concurrency.test;
 
+import com.my.concurrency.db.DbHelper;
+import com.my.concurrency.models.Customer;
+
 import java.util.Date;
 
 public class TestAnything {
@@ -44,7 +47,45 @@ public class TestAnything {
 //            }
 //        }.run();
 //        new TestFom();
-        System.out.println(new Date());
+//        System.out.println(new Date());
+//        LinkedList<Customer> customers = new LinkedList<>();
+//        customers.add(new Customer());
+//        Customer remove = customers.remove();
+//        System.out.println(remove);
+//
+//        Queue test1 = new LinkedList<Customer>();
+//
+//        test1.add(new Customer());
+//        System.out.println(test1.poll());
+////
+//
+//        for (int i = 0; i < 5; i++) {
+//            for (Queue q :
+//                    test1) {
+//                q.add(new Customer());
+//            }
+//        }
+//        for (int i = 0; i < 5; i++) {
+//            for (Queue q :
+//                    test1) {
+//                Customer poll = (Customer) q.poll();
+//                System.out.println(poll);
+//
+//            }
+//        }
+//        System.out.println(new Byte("0") == false);
+
+        Customer customer = new Customer();
+        customer.setNumOfProducts(123);
+        customer.setArrivedTime(new Date());
+        customer.setCheckoutId(0);
+        customer.setCheckStartTime(new Date(0));
+        customer.setCheckEndTime(new Date(0));
+        customer.setFinishedTime(new Date());
+        customer.setLostFlag(new Byte("1"));
+        DbHelper dbHelper = new DbHelper();
+        dbHelper.insertACustomer(customer);
+        System.out.println(customer.getId());
     }
 
 }

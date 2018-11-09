@@ -17,6 +17,8 @@ public class Customer {
 
     private Date checkEndTime;
 
+    private Integer checkoutId;
+
     public Integer getId() {
         return id;
     }
@@ -71,5 +73,13 @@ public class Customer {
 
     public void setCheckEndTime(Date checkEndTime) {
         this.checkEndTime = checkEndTime;
+    }
+
+    public Integer getCheckoutId() {
+        return checkoutId;
+    }
+
+    public void setCheckoutId(Integer checkoutId) {
+        this.checkoutId = checkoutId;
     }
 }

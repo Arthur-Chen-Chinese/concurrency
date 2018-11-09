@@ -21,8 +21,6 @@ public class History {
 
     private String specificRateRange;
 
-    private String frequencyOfChangeOfRate;
-
     public Integer getId() {
         return id;
     }
@@ -101,13 +99,5 @@ public class History {
 
     public void setSpecificRateRange(String specificRateRange) {
         this.specificRateRange = specificRateRange == null ? null : specificRateRange.trim();
-    }
-
-    public String getFrequencyOfChangeOfRate() {
-        return frequencyOfChangeOfRate;
-    }
-
-    public void setFrequencyOfChangeOfRate(String frequencyOfChangeOfRate) {
-        this.frequencyOfChangeOfRate = frequencyOfChangeOfRate == null ? null : frequencyOfChangeOfRate.trim();
     }
 }

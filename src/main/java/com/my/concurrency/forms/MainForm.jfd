@@ -166,8 +166,8 @@ new FormModel {
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-						"$horizontalGroup": "par l {seq {space :::p, par l {comp label1:::::x, comp cbNoOfCheckouts:::::x, seq t {space :0:0:x, par l {comp label5:::p:246:p, comp cbCustomerArrivalRate:::p:246:p}}, seq {par l {comp label2:::p:246:p, comp tfNoOfProducts:::p:246:p, comp label3:::p:246:p, comp cbTimeToCheckAProduct:::p:246:p, comp label4:::p:246:p, comp cbNoOf5OrLess:::p:246:p, comp label7:::p:246:p, comp cbFastForward:::p:246:p}, space :0:0:x}}, space :::p}}"
-						"$verticalGroup": "par l {seq l {space :::p, comp label1:::p::p, space :::p, comp cbNoOfCheckouts:::p:30:p, space :::p, comp label2:::p::p, space :6:6:p, comp tfNoOfProducts:::p:30:p, space :::p, comp label3:::p::p, space :6:6:p, comp cbTimeToCheckAProduct:::p:30:p, space :::p, comp label4:::p::p, space :6:6:p, comp cbNoOf5OrLess:::p:30:p, space :::p, comp label5:::p::p, space :6:6:p, comp cbCustomerArrivalRate:::p:30:p, space :::p, comp label7:::p::p, space :6:6:p, comp cbFastForward:::p:30:p, space ::50:x}}"
+						"$horizontalGroup": "par l {seq {space :::p, par l {comp label1:::::x, comp cbNoOfCheckouts:::::x, seq {par l {comp label7:::p:246:p, comp cbFastForward:::p:246:p, comp label4:::p:246:p, comp cbNoOf5OrLess:::p:246:p}, space :0:0:x}, seq t {space :0:0:x, par l {par l:t {comp label5:::p:246:p, comp cbCustomerArrivalRate:::p:246:p}, par l:t {comp label3:::p:246:p, comp cbTimeToCheckAProduct:::p:246:p}, par l:t {comp label2:::p:246:p, comp tfNoOfProducts:::p:246:p}}}}, space :::p}}"
+						"$verticalGroup": "par l {seq l {space :::p, comp label1:::p::p, space :::p, comp cbNoOfCheckouts:::p:30:p, space :::p, comp label4:::p::p, space :6:6:p, comp cbNoOf5OrLess:::p:30:p, space :::p, comp label2:::p::p, space :10:10:p, comp tfNoOfProducts:::p:30:p, space :p:3:p, comp label3:::p::p, space :5:5:p, comp cbTimeToCheckAProduct:::p:30:p, space :::p, comp label5:::p::p, space :6:6:p, comp cbCustomerArrivalRate:::p:30:p, space :::p, comp label7:::p::p, space :6:6:p, comp cbFastForward:::p:30:p, space ::50:x}}"
 					} ) {
 						name: "panel3"
 						add( new FormComponent( "javax.swing.JLabel" ) {
@@ -176,21 +176,6 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "cbNoOfCheckouts"
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label2"
-							"text": "No. of products in a trolley (1-200)"
-						} )
-						add( new FormComponent( "javax.swing.JTextField" ) {
-							name: "tfNoOfProducts"
-							"text": "30"
-						} )
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "label3"
-							"text": "Time to check a product (0.5-6s)"
-						} )
-						add( new FormComponent( "javax.swing.JComboBox" ) {
-							name: "cbTimeToCheckAProduct"
 						} )
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label4"
@@ -212,6 +197,21 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "cbFastForward"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "Time to check a product (0.5-6s)"
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "cbTimeToCheckAProduct"
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label2"
+							"text": "No. of products in a trolley (1-200)"
+						} )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "tfNoOfProducts"
+							"text": "30"
 						} )
 					} )
 				}, new FormLayoutConstraints( null ) {

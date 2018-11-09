@@ -4,6 +4,7 @@
 
 package com.my.concurrency.forms;
 
+import com.my.concurrency.models.Checkout;
 import com.my.concurrency.models.Customer;
 
 import javax.swing.*;
@@ -13,8 +14,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.regex.Pattern;
 
 /**
@@ -22,10 +25,13 @@ import java.util.regex.Pattern;
  */
 public class MainForm extends JFrame {
 
-    private ArrayList<JLabel> checkoutList = new ArrayList<>();
-    private ArrayList<JPanel> waitingLineList = new ArrayList<>();
-    private List<Customer> customerList = new ArrayList<>();   //customer generated
-    private Queue<Customer>[] customerWaitingLists = new Queue[8];   //customer already in supermarket
+    private ArrayList<JLabel> checkoutLabelList;
+    private ArrayList<Checkout> checkoutList;
+    private ArrayList<Checkout> checkout5OrLessList;
+    private ArrayList<JPanel> waitingLineList;
+    private BlockingQueue<Customer> customerList;   //customer generated
+    private ArrayList<Queue<Customer>> customerWaitingLists;   //customer already in supermarket
+    private ArrayList<Queue<Customer>> customer5OrLessWaitingLists;   //customer already in 5OrLess waitingLine supermarket
     public final static String picPathCheckoutAvaiable = "src\\main\\resources\\pics\\checkout_available.png";
     public final static String picPathCheckoutUnavaiable = "src\\main\\resources\\pics\\checkout_unavailable.png";
     public final static String picPathCheckoutBusy = "src\\main\\resources\\pics\\checkout_busy.png";
@@ -33,16 +39,17 @@ public class MainForm extends JFrame {
     public static int CheckoutAvaiableStatus = 0;
     public static int CheckoutUnavaiableStatus = 1;
     public static int CheckoutBusyStatus = 2;
-    private ImageIcon iconCheckoutUnavaiable = new ImageIcon(picPathCheckoutUnavaiable);
-    private ImageIcon iconCheckoutAvaiable = new ImageIcon(picPathCheckoutAvaiable);
-    private ImageIcon iconCheckoutBusy = new ImageIcon(picPathCheckoutBusy);
-    private ImageIcon iconCustomer = new ImageIcon(picPathCustomer);
+    private ImageIcon iconCheckoutUnavaiable;
+    private ImageIcon iconCheckoutAvaiable;
+    private ImageIcon iconCheckoutBusy;
+    private ImageIcon iconCustomer;
 
     public MainForm() {
         initComponents();
-        initCustomompnents();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        waitingLineList = new ArrayList<>();
         waitingLineList.add(pnlWL1);
         waitingLineList.add(pnlWL2);
         waitingLineList.add(pnlWL3);
@@ -51,14 +58,27 @@ public class MainForm extends JFrame {
         waitingLineList.add(pnlWL6);
         waitingLineList.add(pnlWL7);
         waitingLineList.add(pnlWL8);
+        checkoutLabelList = new ArrayList<>();
+        customerList = new ArrayBlockingQueue<Customer>(100);
+        customerWaitingLists = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            customerWaitingLists.add(new LinkedList<Customer>());
+        }
+        iconCheckoutUnavaiable = new ImageIcon(picPathCheckoutUnavaiable);
+        iconCheckoutAvaiable = new ImageIcon(picPathCheckoutAvaiable);
+        iconCheckoutBusy = new ImageIcon(picPathCheckoutBusy);
+        iconCustomer = new ImageIcon(picPathCustomer);
+        checkoutList = new ArrayList<>();
+        checkout5OrLessList = new ArrayList<>();
+        customer5OrLessWaitingLists = new ArrayList<>();
+        initCustomompnents();
     }
 
     private void initCustomompnents() {
 
         for (int i = 0; i < 8; i++) {
-
             JLabel lbCheckout = new JLabel(iconCheckoutUnavaiable);
-            checkoutList.add(lbCheckout);
+            checkoutLabelList.add(lbCheckout);
             pnlCheckoutsPlaceHolder.add(lbCheckout);
         }
 
@@ -70,12 +90,12 @@ public class MainForm extends JFrame {
         //init the no. of checkout comboBox
         String s = "0.5 - ";
         for (int i = 1; i <= 6; i++) {
-            String tiemRange = s + i + "s";
-            cbTimeToCheckAProduct.addItem(tiemRange);
+            String timeRange = s + i + "s";
+            cbTimeToCheckAProduct.addItem(timeRange);
         }
 
         //init the no. of 5 or less comboBox
-        for (int i = 1; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             cbNoOf5OrLess.addItem(i);
         }
 
@@ -100,17 +120,37 @@ public class MainForm extends JFrame {
         boolean matchFlag = Pattern.matches(regex, tfNoOfProducts.getText());
         if (!matchFlag) {
             JOptionPane.showMessageDialog(null, "Please input a integer from 1 to 200 in \"No.of product in trolley\" input box", "标题", JOptionPane.ERROR_MESSAGE);
+            return;
         } else {
             int range = Integer.parseInt(tfNoOfProducts.getText());
             if (range > 200 || range <= 0) {
                 JOptionPane.showMessageDialog(null, "Please input a integer from 1 to 200 in \"No.of product in trolley\" input box", "标题", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
         }
+        //all validation are passed, create the checkout
+        int numOfCheckout = cbNoOfCheckouts.getSelectedIndex() + 1;
+        int numOf5OrLess = cbNoOf5OrLess.getSelectedIndex();
+        int numOfProduct = Integer.parseInt(tfNoOfProducts.getText());
+        int timeToCheckAProduct = cbTimeToCheckAProduct.getSelectedIndex() + 1;
+        int customerArriveRate = cbCustomerArrivalRate.getSelectedIndex() + 1;
+        int fastForward = 2 << cbFastForward.getSelectedIndex();
+
+
+        //TODO using Executor framework to manage the below threads
+        //creates CheckoutThreads by numOfCheckout
+        //creates CheckoutThreads by numOf5OrLess
+
+        //TODO set the num of product used by CustomerGenerateorThread
+
+        //TODO set timeToCheckAProduct used by CustomerGenerateorThread
+
+
     }
 
     public void updateCheckout(int numOfCheckout, int checkoutStatus) {
-        JLabel jLabel = checkoutList.get(numOfCheckout - 1);
+        JLabel jLabel = checkoutLabelList.get(numOfCheckout - 1);
         switch (checkoutStatus) {
             case 0:
                 jLabel.setIcon(iconCheckoutAvaiable);
@@ -130,7 +170,7 @@ public class MainForm extends JFrame {
             jPanel.removeAll();
             Queue<Customer> customerWaitingList;
             synchronized (customerWaitingLists) {
-                customerWaitingList = customerWaitingLists[numOfCheckout - 1];
+                customerWaitingList = customerWaitingLists.get(numOfCheckout - 1);
                 for (Customer cus : customerWaitingList
                 ) {
                     JLabel l = new JLabel(iconCustomer);
@@ -184,16 +224,16 @@ public class MainForm extends JFrame {
         panel3 = new JPanel();
         label1 = new JLabel();
         cbNoOfCheckouts = new JComboBox();
-        label2 = new JLabel();
-        tfNoOfProducts = new JTextField();
-        label3 = new JLabel();
-        cbTimeToCheckAProduct = new JComboBox();
         label4 = new JLabel();
         cbNoOf5OrLess = new JComboBox();
         label5 = new JLabel();
         cbCustomerArrivalRate = new JComboBox();
         label7 = new JLabel();
         cbFastForward = new JComboBox();
+        label3 = new JLabel();
+        cbTimeToCheckAProduct = new JComboBox();
+        label2 = new JLabel();
+        tfNoOfProducts = new JTextField();
         panel2 = new JPanel();
         panel8 = new JPanel();
         scrollPane1 = new JScrollPane();
@@ -393,15 +433,6 @@ public class MainForm extends JFrame {
                     //---- label1 ----
                     label1.setText("No. of checkouts (1-8)");
 
-                    //---- label2 ----
-                    label2.setText("No. of products in a trolley (1-200)");
-
-                    //---- tfNoOfProducts ----
-                    tfNoOfProducts.setText("30");
-
-                    //---- label3 ----
-                    label3.setText("Time to check a product (0.5-6s)");
-
                     //---- label4 ----
                     label4.setText("No. of \"5 or less\" checkouts (0-7)");
 
@@ -410,6 +441,15 @@ public class MainForm extends JFrame {
 
                     //---- label7 ----
                     label7.setText("Fast forwarde");
+
+                    //---- label3 ----
+                    label3.setText("Time to check a product (0.5-6s)");
+
+                    //---- label2 ----
+                    label2.setText("No. of products in a trolley (1-200)");
+
+                    //---- tfNoOfProducts ----
+                    tfNoOfProducts.setText("30");
 
                     GroupLayout panel3Layout = new GroupLayout(panel3);
                     panel3.setLayout(panel3Layout);
@@ -420,22 +460,25 @@ public class MainForm extends JFrame {
                                             .addGroup(panel3Layout.createParallelGroup()
                                                     .addComponent(label1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                     .addComponent(cbNoOfCheckouts)
+                                                    .addGroup(panel3Layout.createSequentialGroup()
+                                                            .addGroup(panel3Layout.createParallelGroup()
+                                                                    .addComponent(label7, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                    .addComponent(cbFastForward, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                    .addComponent(label4, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                    .addComponent(cbNoOf5OrLess, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
+                                                            .addGap(0, 0, Short.MAX_VALUE))
                                                     .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createSequentialGroup()
                                                             .addGap(0, 0, Short.MAX_VALUE)
                                                             .addGroup(panel3Layout.createParallelGroup()
-                                                                    .addComponent(label5, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(cbCustomerArrivalRate, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)))
-                                                    .addGroup(panel3Layout.createSequentialGroup()
-                                                            .addGroup(panel3Layout.createParallelGroup()
-                                                                    .addComponent(label2, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(label3, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(cbTimeToCheckAProduct, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(label4, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(cbNoOf5OrLess, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(label7, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-                                                                    .addComponent(cbFastForward, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
-                                                            .addGap(0, 0, Short.MAX_VALUE)))
+                                                                    .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createParallelGroup()
+                                                                            .addComponent(label5, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                            .addComponent(cbCustomerArrivalRate, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
+                                                                    .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createParallelGroup()
+                                                                            .addComponent(label3, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                            .addComponent(cbTimeToCheckAProduct, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
+                                                                    .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createParallelGroup()
+                                                                            .addComponent(label2, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+                                                                            .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)))))
                                             .addContainerGap())
                     );
                     panel3Layout.setVerticalGroup(
@@ -446,17 +489,17 @@ public class MainForm extends JFrame {
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(cbNoOfCheckouts, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(label2)
-                                            .addGap(6, 6, 6)
-                                            .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(label3)
-                                            .addGap(6, 6, 6)
-                                            .addComponent(cbTimeToCheckAProduct, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(label4)
                                             .addGap(6, 6, 6)
                                             .addComponent(cbNoOf5OrLess, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(label2)
+                                            .addGap(10, 10, 10)
+                                            .addComponent(tfNoOfProducts, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+                                            .addGap(3, 3, 3)
+                                            .addComponent(label3)
+                                            .addGap(5, 5, 5)
+                                            .addComponent(cbTimeToCheckAProduct, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(label5)
                                             .addGap(6, 6, 6)
@@ -607,16 +650,16 @@ public class MainForm extends JFrame {
     private JPanel panel3;
     private JLabel label1;
     private JComboBox cbNoOfCheckouts;
-    private JLabel label2;
-    private JTextField tfNoOfProducts;
-    private JLabel label3;
-    private JComboBox cbTimeToCheckAProduct;
     private JLabel label4;
     private JComboBox cbNoOf5OrLess;
     private JLabel label5;
     private JComboBox cbCustomerArrivalRate;
     private JLabel label7;
     private JComboBox cbFastForward;
+    private JLabel label3;
+    private JComboBox cbTimeToCheckAProduct;
+    private JLabel label2;
+    private JTextField tfNoOfProducts;
     private JPanel panel2;
     private JPanel panel8;
     private JScrollPane scrollPane1;

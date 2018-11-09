@@ -1,15 +1,12 @@
-package com.my.concurrency.models;
+package com.my.concurrency.threads;
 
-import com.my.concurrency.dao.CustomerMapper;
+import com.my.concurrency.db.DbHelper;
 import com.my.concurrency.forms.MainForm;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import com.my.concurrency.models.Checkout;
+import com.my.concurrency.models.Customer;
+import com.my.concurrency.models.FastForward;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Queue;
@@ -17,22 +14,26 @@ import java.util.Queue;
 public class CheckoutThread implements Runnable {
     private MainForm mf;
     private int numOfCheckout;
+    private Checkout checkout;
     private ArrayList<JPanel> waitingLineList;
-    private Queue[] customerWaitingLists;
+    private ArrayList<Queue<Customer>> waitingList;
+    private boolean is5OrLess;
 
-    public CheckoutThread(MainForm mf, int numOfCheckout, ArrayList<JPanel> waitingLineList, Queue[] customerWaitingLists) {
+    public CheckoutThread(MainForm mf, int numOfCheckout, Checkout checkout, ArrayList<JPanel> waitingLineList, ArrayList<Queue<Customer>> customerWaitingLists, ArrayList<Queue<Customer>> customer5OrLessWaitingLists, boolean is5OrLess) {
         this.mf = mf;
         this.numOfCheckout = numOfCheckout;
+        this.checkout = checkout;
         this.waitingLineList = waitingLineList;
-        this.customerWaitingLists = customerWaitingLists;
+        this.waitingList = is5OrLess ? customer5OrLessWaitingLists : customerWaitingLists;
+        this.is5OrLess = is5OrLess;
     }
 
     @Override
     public void run() {
         while (true) {
             Customer customerPolled;
-            synchronized (customerWaitingLists) {
-                customerPolled = (Customer) customerWaitingLists[numOfCheckout - 1].poll();
+            synchronized (waitingList) {
+                customerPolled = (Customer) waitingList.get(numOfCheckout - 1).poll();
             }
             if (customerPolled == null) {
                 mf.updateCheckout(numOfCheckout, MainForm.CheckoutAvaiableStatus);
@@ -50,23 +51,13 @@ public class CheckoutThread implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                customerPolled.setCheckoutId(checkout.getId());
+                customerPolled.setLostFlag(new Byte("0"));
                 customerPolled.setCheckEndTime(new Date());
                 customerPolled.setFinishedTime(new Date());
 
-                InputStream config = null;
-                try {
-                    config = Resources.getResourceAsStream("SqlMapConfig.xml");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
-                SqlSession sqlSession = sqlSessionFactory.openSession();
-
-                CustomerMapper cm = sqlSession.getMapper(CustomerMapper.class);
-                cm.insert(customerPolled);
-
-                sqlSession.commit();
-                sqlSession.close();
+                DbHelper dbHelper = new DbHelper();
+                dbHelper.insertACustomer(customerPolled);
             }
         }
 
