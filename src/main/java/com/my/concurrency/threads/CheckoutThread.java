@@ -18,6 +18,11 @@ public class CheckoutThread implements Runnable {
     private ArrayList<JPanel> waitingLineList;
     private ArrayList<Queue<Customer>> waitingList;
     private boolean is5OrLess;
+    private boolean stop = false;
+
+    public void stopThread() {
+        this.stop = true;
+    }
 
     public CheckoutThread(MainForm mf, int numOfCheckout, Checkout checkout, ArrayList<JPanel> waitingLineList, ArrayList<Queue<Customer>> customerWaitingLists, ArrayList<Queue<Customer>> customer5OrLessWaitingLists, boolean is5OrLess) {
         this.mf = mf;
@@ -30,7 +35,7 @@ public class CheckoutThread implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!stop) {
             Customer customerPolled;
             synchronized (waitingList) {
                 customerPolled = (Customer) waitingList.get(numOfCheckout - 1).poll();
@@ -57,7 +62,7 @@ public class CheckoutThread implements Runnable {
                 customerPolled.setFinishedTime(new Date());
 
                 DbHelper dbHelper = new DbHelper();
-                dbHelper.insertACustomer(customerPolled);
+                dbHelper.updateCustomer(customerPolled);
             }
         }
 

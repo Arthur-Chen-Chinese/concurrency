@@ -163,6 +163,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "btnEndandShowStatistics"
 							"text": "End and Show Statistics"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnEndandShowStatisticsActionPerformed", true ) )
 						} )
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {

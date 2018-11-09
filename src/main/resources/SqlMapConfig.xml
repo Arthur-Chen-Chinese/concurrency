@@ -32,6 +32,7 @@
     <!--resouces开始扫描的目录就是从maven的main\resources下开始扫描-->
     <mappers>
         <mapper resource="mappers/CheckoutMapper.xml"/>
+        <mapper resource="mappers/CheckoutCustomMapper.xml"/>
         <mapper resource="mappers/CustomerMapper.xml"/>
         <mapper resource="mappers/CustomerCustomMapper.xml"/>
         <mapper resource="mappers/HistoryMapper.xml"/>

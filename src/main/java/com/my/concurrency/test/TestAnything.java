@@ -1,10 +1,5 @@
 package com.my.concurrency.test;
 
-import com.my.concurrency.db.DbHelper;
-import com.my.concurrency.models.Customer;
-
-import java.util.Date;
-
 public class TestAnything {
 
     public static void main(String[] args) {
@@ -74,18 +69,54 @@ public class TestAnything {
 //            }
 //        }
 //        System.out.println(new Byte("0") == false);
+//
+//        Customer customer = new Customer();
+//        customer.setNumOfProducts(123);
+//        customer.setArrivedTime(new Date());
+//        customer.setCheckoutId(0);
+//        customer.setCheckStartTime(new Date(0));
+//        customer.setCheckEndTime(new Date(0));
+//        customer.setFinishedTime(new Date());
+//        customer.setLostFlag(new Byte("1"));
+//        DbHelper dbHelper = new DbHelper();
+//        dbHelper.insertACustomer(customer);
+//        System.out.println(customer.getId());
+//        Checkout checkout = new Checkout();
+//        DbHelper dbHelper = new DbHelper();
+//        dbHelper.insertACheckout(checkout);
+//        System.out.println(checkout.getId());
 
-        Customer customer = new Customer();
-        customer.setNumOfProducts(123);
-        customer.setArrivedTime(new Date());
-        customer.setCheckoutId(0);
-        customer.setCheckStartTime(new Date(0));
-        customer.setCheckEndTime(new Date(0));
-        customer.setFinishedTime(new Date());
-        customer.setLostFlag(new Byte("1"));
-        DbHelper dbHelper = new DbHelper();
-        dbHelper.insertACustomer(customer);
-        System.out.println(customer.getId());
+//        ExecutorService executorService = Executors.newFixedThreadPool(3);
+//        for (int i = 0; i < 3; i++) {
+//            Runnable runnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    while (true) {
+//                        System.out.println(Thread.currentThread().getName() + "" + new Date());
+//                    }
+//                }
+//            };
+//            executorService.execute(runnable);
+//        }
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        executorService.shutdownNow();
+        MyTestThread myTestThread = new MyTestThread();
+        Thread thread = new Thread(myTestThread);
+        thread.start();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        myTestThread.stopThread();
+
+
     }
 
 }

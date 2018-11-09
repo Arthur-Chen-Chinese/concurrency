@@ -15,6 +15,8 @@ public interface CheckoutMapper {
 
     int insert(Checkout record);
 
+    int insertAndGetId(Checkout record);
+
     int insertSelective(Checkout record);
 
     List<Checkout> selectByExample(CheckoutExample example);

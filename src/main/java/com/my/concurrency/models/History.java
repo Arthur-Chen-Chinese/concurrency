@@ -33,7 +33,7 @@ public class History {
         return cusStartId;
     }
 
-    public void setCusStartId(Integer cusStartId) {
+    public synchronized void setCusStartId(Integer cusStartId) {
         this.cusStartId = cusStartId;
     }
 
@@ -41,7 +41,7 @@ public class History {
         return cusEndId;
     }
 
-    public void setCusEndId(Integer cusEndId) {
+    public synchronized void setCusEndId(Integer cusEndId) {
         this.cusEndId = cusEndId;
     }
 
@@ -49,7 +49,7 @@ public class History {
         return checkoutStartId;
     }
 
-    public void setCheckoutStartId(Integer checkoutStartId) {
+    public synchronized void setCheckoutStartId(Integer checkoutStartId) {
         this.checkoutStartId = checkoutStartId;
     }
 
@@ -57,7 +57,7 @@ public class History {
         return checkoutEndId;
     }
 
-    public void setCheckoutEndId(Integer checkoutEndId) {
+    public synchronized void setCheckoutEndId(Integer checkoutEndId) {
         this.checkoutEndId = checkoutEndId;
     }
 

@@ -4,8 +4,14 @@
 
 package com.my.concurrency.forms;
 
+import com.my.concurrency.db.DbHelper;
 import com.my.concurrency.models.Checkout;
 import com.my.concurrency.models.Customer;
+import com.my.concurrency.models.FastForward;
+import com.my.concurrency.models.History;
+import com.my.concurrency.threads.AssigningThread;
+import com.my.concurrency.threads.CheckoutThread;
+import com.my.concurrency.threads.CustomerGeneratorThread;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -14,6 +20,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,6 +39,10 @@ public class MainForm extends JFrame {
     private BlockingQueue<Customer> customerList;   //customer generated
     private ArrayList<Queue<Customer>> customerWaitingLists;   //customer already in supermarket
     private ArrayList<Queue<Customer>> customer5OrLessWaitingLists;   //customer already in 5OrLess waitingLine supermarket
+    private History history;
+    private CheckoutThread[] checkoutThreadList;
+    private AssigningThread assigningThread;
+    private CustomerGeneratorThread customerGeneratorThread;
     public final static String picPathCheckoutAvaiable = "src\\main\\resources\\pics\\checkout_available.png";
     public final static String picPathCheckoutUnavaiable = "src\\main\\resources\\pics\\checkout_unavailable.png";
     public final static String picPathCheckoutBusy = "src\\main\\resources\\pics\\checkout_busy.png";
@@ -43,6 +54,7 @@ public class MainForm extends JFrame {
     private ImageIcon iconCheckoutAvaiable;
     private ImageIcon iconCheckoutBusy;
     private ImageIcon iconCustomer;
+    private DbHelper dbHelper;
 
     public MainForm() {
         initComponents();
@@ -71,6 +83,9 @@ public class MainForm extends JFrame {
         checkoutList = new ArrayList<>();
         checkout5OrLessList = new ArrayList<>();
         customer5OrLessWaitingLists = new ArrayList<>();
+        history = new History();
+        checkoutThreadList = new CheckoutThread[10];
+        dbHelper = new DbHelper();
         initCustomompnents();
     }
 
@@ -138,13 +153,50 @@ public class MainForm extends JFrame {
         int fastForward = 2 << cbFastForward.getSelectedIndex();
 
 
-        //TODO using Executor framework to manage the below threads
+        //set time and timeToCheckAProduct fastforward
+        FastForward.setTimeToCheckout(timeToCheckAProduct);
+        FastForward.setTime(fastForward);
+
+        //using Executor framework to manage the below threads
         //creates CheckoutThreads by numOfCheckout
         //creates CheckoutThreads by numOf5OrLess
+//        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        int num = 1;
+        for (int i = 0; i < numOfCheckout; i++) {
+            Checkout checkout = new Checkout();
+            checkout.setName("Checkout - " + num);
+            checkout.setStartedTime(new Date());
+            checkout.setNumOfCheckedCustomers(0);
+            checkout.setNumOfCheckedItems(0);
+            dbHelper.insertACheckout(checkout);
+            CheckoutThread checkoutThread = new CheckoutThread(this, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, false);
+//            executorService.execute(checkoutThreadList);
+            checkoutThreadList[num - 1] = checkoutThread;
+            new Thread(checkoutThread).start();
+            num++;
+        }
+        for (int i = 0; i < numOf5OrLess; i++) {
+            Checkout checkout = new Checkout();
+            checkout.setName("Checkout5OrLess - " + num);
+            checkout.setStartedTime(new Date());
+            checkout.setNumOfCheckedCustomers(0);
+            checkout.setNumOfCheckedItems(0);
+            dbHelper.insertACheckout(checkout);
+            CheckoutThread checkoutThread = new CheckoutThread(this, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, true);
+//            executorService.execute(checkoutThreadList);
+            checkoutThreadList[num - 1] = checkoutThread;
+            new Thread(checkoutThread).start();
+            num++;
+        }
 
-        //TODO set the num of product used by CustomerGenerateorThread
 
-        //TODO set timeToCheckAProduct used by CustomerGenerateorThread
+        //set the num of product and timeToCheckAProduct used by CustomerGenerateorThread and starts CustomerGenerateorThread
+        customerGeneratorThread = new CustomerGeneratorThread(this, customerList, numOfProduct, history);
+        new Thread(customerGeneratorThread).start();
+
+        //starts Assigning Thread
+        AssigningThread assigningThread = new AssigningThread(this, customerWaitingLists, customer5OrLessWaitingLists, customerList);
+        new Thread(assigningThread).start();
 
 
     }
@@ -188,6 +240,22 @@ public class MainForm extends JFrame {
             jPanel.add(l);
             jPanel.repaint();
         }
+    }
+
+    private void btnEndandShowStatisticsActionPerformed(ActionEvent e) {
+        // TODO ends up all checkout thread by stopThread() and assigningThread and CustomerGeneratorThread
+        for (CheckoutThread c :
+                checkoutThreadList) {
+            c.stopThread();
+        }
+        //todo save checkouts' data and history into database
+
+        //todo invokes calculation method to get statistics
+
+        //todo binds statistics with scrollTables or shows them in the JTextFields
+
+        //todo jumps to statistics tab
+
     }
 
     private void initComponents() {
@@ -424,6 +492,12 @@ public class MainForm extends JFrame {
 
                     //---- btnEndandShowStatistics ----
                     btnEndandShowStatistics.setText("End and Show Statistics");
+                    btnEndandShowStatistics.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            btnEndandShowStatisticsActionPerformed(e);
+                        }
+                    });
                     panel6.add(btnEndandShowStatistics);
                 }
 

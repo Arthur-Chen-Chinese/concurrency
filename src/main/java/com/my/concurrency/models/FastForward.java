@@ -13,7 +13,7 @@ public class FastForward {
     /**
      * The unit is single.
      */
-    private static int fast = 1;
+    private static int time = 1;
 
     public static int TimeToCheckout = 0;
     public static int TimeToGenerateACustomer = 1;
@@ -38,12 +38,12 @@ public class FastForward {
         FastForward.timeToGenerateACustomer = timeToGenerateACustomer;
     }
 
-    public static int getFast() {
-        return fast;
+    public static int getTime() {
+        return time;
     }
 
-    public static void setFast(int fast) {
-        FastForward.fast = fast;
+    public static void setTime(int time) {
+        FastForward.time = time;
     }
 
     public static int getTimeToCheckout() {
@@ -65,8 +65,8 @@ public class FastForward {
                 time = timeToGenerateACustomer;
                 break;
         }
-        //fast forward
-        time /= fast;
+        //time forward
+        time /= FastForward.time;
         return time;
     }
 }

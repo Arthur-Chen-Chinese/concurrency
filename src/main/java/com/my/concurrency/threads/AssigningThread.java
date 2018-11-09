@@ -14,7 +14,7 @@ public class AssigningThread implements Runnable {
     private ArrayList<Queue<Customer>> customerWaitingLists;
     private ArrayList<Queue<Customer>> customer5OrLessWaitingLists;
     private BlockingQueue<Customer> customerList;
-
+    private boolean stop = false;
 
     public AssigningThread(MainForm mf, ArrayList<Queue<Customer>> customerWaitingLists, ArrayList<Queue<Customer>> customer5OrLessWaitingLists, BlockingQueue<Customer> customerList) {
         this.mf = mf;
@@ -23,9 +23,13 @@ public class AssigningThread implements Runnable {
         this.customerList = customerList;
     }
 
+    public void stopThread() {
+        this.stop = true;
+    }
+
     @Override
     public void run() {
-        while (true) {
+        while (!stop) {
             try {
                 Customer customerToken = customerList.take();//if take successfully, check whether the all wait lines are full or not
                 Integer numOfProducts = customerToken.getNumOfProducts();
@@ -65,7 +69,7 @@ public class AssigningThread implements Runnable {
                     customerToken.setFinishedTime(new Date());
                     customerToken.setLostFlag(new Byte("1"));
                     DbHelper dbHelper = new DbHelper();
-                    dbHelper.insertACustomer(customerToken);
+                    dbHelper.updateCustomer(customerToken);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
