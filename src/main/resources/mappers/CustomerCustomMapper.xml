@@ -7,9 +7,11 @@
         </selectKey>
         insert into customers (id, arrived_time, finished_time,
         num_of_products, lost_flag, check_start_time,
-        check_end_time, checkout_id)
+        check_end_time, checkout_id, arrived_nanosec,
+        check_start_nanosec)
         values (#{id,jdbcType=INTEGER}, #{arrivedTime,jdbcType=TIMESTAMP}, #{finishedTime,jdbcType=TIMESTAMP},
         #{numOfProducts,jdbcType=INTEGER}, #{lostFlag,jdbcType=TINYINT}, #{checkStartTime,jdbcType=TIMESTAMP},
-        #{checkEndTime,jdbcType=TIMESTAMP}, #{checkoutId,jdbcType=INTEGER})
+        #{checkEndTime,jdbcType=TIMESTAMP}, #{checkoutId,jdbcType=INTEGER}, #{arrivedNanosec,jdbcType=BIGINT},
+        #{checkStartNanosec,jdbcType=BIGINT})
     </insert>
 </mapper>

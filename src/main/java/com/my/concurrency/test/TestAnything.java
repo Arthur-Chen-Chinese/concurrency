@@ -1,5 +1,7 @@
 package com.my.concurrency.test;
 
+import java.math.BigDecimal;
+
 public class TestAnything {
 
     public static void main(String[] args) {
@@ -104,19 +106,52 @@ public class TestAnything {
 //            e.printStackTrace();
 //        }
 //        executorService.shutdownNow();
-        MyTestThread myTestThread = new MyTestThread();
-        Thread thread = new Thread(myTestThread);
-        thread.start();
+//        MyTestThread myTestThread = new MyTestThread();
+//        Thread thread = new Thread(myTestThread);
+//        thread.start();
+//
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        myTestThread.stopThread();
+//
+//
+//        Date date = new Date();
+//        date.setHours(20);
+//        Date date1 = new Date();
+//        SimpleDateFormat ft =
+//                new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
+//        System.out.println(ft.format(date1));
+//        System.out.println(ft.format(date));
+//
+//        Byte aByte = new Byte("0");
+//        System.out.println(aByte == 0);
+//        Object[] objects = {123.0 + "%", 123};
+//        System.out.println(objects[0]);
+//        Date date = new Date();
+//        long x = System.nanoTime();
+//
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        Date date1 = new Date();
+//        long x1 = System.nanoTime();
+//
+//        System.out.println(date1.getTime() - date.getTime());
+//        System.out.println(x1 - x);
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        myTestThread.stopThread();
-
-
+        BigDecimal bigDecimal = new BigDecimal("35436453543".toCharArray());
+        BigDecimal bigDecima2 = new BigDecimal("8976542453645".toCharArray());
+        BigDecimal divide = bigDecimal.divide(bigDecima2, 5, BigDecimal.ROUND_HALF_UP);
+        System.out.println(divide);
+        System.out.println(bigDecimal.divide(bigDecima2, 5, BigDecimal.ROUND_HALF_UP));
+        BigDecimal multiply = divide.multiply(new BigDecimal(100));
+        System.out.println(multiply.floatValue() + "%");
     }
 
 }

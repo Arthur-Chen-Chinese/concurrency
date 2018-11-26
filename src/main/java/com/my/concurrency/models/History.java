@@ -5,7 +5,7 @@ public class History {
 
     private Integer cusStartId;
 
-    private Integer cusEndId;
+    private Integer cusEndId = 0;
 
     private Integer checkoutStartId;
 
@@ -13,13 +13,13 @@ public class History {
 
     private Integer numOfCheckouts;
 
-    private String numOfProductsInTrolley;
+    private Integer numOfProductsInTrolley;
 
-    private String timeForEachProduct;
+    private Integer timeForEachProduct;
 
     private Integer numOf5OrLessCheckouts;
 
-    private String specificRateRange;
+    private Integer specificRateRange;
 
     public Integer getId() {
         return id;
@@ -33,7 +33,7 @@ public class History {
         return cusStartId;
     }
 
-    public synchronized void setCusStartId(Integer cusStartId) {
+    public void setCusStartId(Integer cusStartId) {
         this.cusStartId = cusStartId;
     }
 
@@ -41,7 +41,7 @@ public class History {
         return cusEndId;
     }
 
-    public synchronized void setCusEndId(Integer cusEndId) {
+    public void setCusEndId(Integer cusEndId) {
         this.cusEndId = cusEndId;
     }
 
@@ -49,7 +49,7 @@ public class History {
         return checkoutStartId;
     }
 
-    public synchronized void setCheckoutStartId(Integer checkoutStartId) {
+    public void setCheckoutStartId(Integer checkoutStartId) {
         this.checkoutStartId = checkoutStartId;
     }
 
@@ -57,7 +57,7 @@ public class History {
         return checkoutEndId;
     }
 
-    public synchronized void setCheckoutEndId(Integer checkoutEndId) {
+    public void setCheckoutEndId(Integer checkoutEndId) {
         this.checkoutEndId = checkoutEndId;
     }
 
@@ -69,20 +69,20 @@ public class History {
         this.numOfCheckouts = numOfCheckouts;
     }
 
-    public String getNumOfProductsInTrolley() {
+    public Integer getNumOfProductsInTrolley() {
         return numOfProductsInTrolley;
     }
 
-    public void setNumOfProductsInTrolley(String numOfProductsInTrolley) {
-        this.numOfProductsInTrolley = numOfProductsInTrolley == null ? null : numOfProductsInTrolley.trim();
+    public void setNumOfProductsInTrolley(Integer numOfProductsInTrolley) {
+        this.numOfProductsInTrolley = numOfProductsInTrolley;
     }
 
-    public String getTimeForEachProduct() {
+    public Integer getTimeForEachProduct() {
         return timeForEachProduct;
     }
 
-    public void setTimeForEachProduct(String timeForEachProduct) {
-        this.timeForEachProduct = timeForEachProduct == null ? null : timeForEachProduct.trim();
+    public void setTimeForEachProduct(Integer timeForEachProduct) {
+        this.timeForEachProduct = timeForEachProduct;
     }
 
     public Integer getNumOf5OrLessCheckouts() {
@@ -93,11 +93,11 @@ public class History {
         this.numOf5OrLessCheckouts = numOf5OrLessCheckouts;
     }
 
-    public String getSpecificRateRange() {
+    public Integer getSpecificRateRange() {
         return specificRateRange;
     }
 
-    public void setSpecificRateRange(String specificRateRange) {
-        this.specificRateRange = specificRateRange == null ? null : specificRateRange.trim();
+    public void setSpecificRateRange(Integer specificRateRange) {
+        this.specificRateRange = specificRateRange;
     }
 }

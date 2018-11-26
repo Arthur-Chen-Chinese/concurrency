@@ -46,13 +46,7 @@ public class FastForward {
         FastForward.time = time;
     }
 
-    public static int getTimeToCheckout() {
-        return TimeToCheckout;
-    }
 
-    public static void setTimeToCheckout(int timeToCheckout) {
-        TimeToCheckout = timeToCheckout;
-    }
 
     public static int generateTimeByFast(int generateType) {
         int time = 0;

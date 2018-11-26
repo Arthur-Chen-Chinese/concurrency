@@ -36,9 +36,10 @@ public class CustomerGeneratorThread implements Runnable {
         Customer customer = new Customer();
         customer.setLostFlag(new Byte("0"));
         customer.setArrivedTime(new Date());
+        customer.setArrivedNanosec(System.nanoTime());
         int randomNumOfProducts = (int) (1 + Math.random() * (numOfProducts));
         customer.setNumOfProducts(randomNumOfProducts);
-        DbHelper dbHelper = new DbHelper();
+        DbHelper dbHelper = new DbHelper(history);
         dbHelper.insertACustomer(customer);
         history.setCusStartId(customer.getId());
 
@@ -53,6 +54,7 @@ public class CustomerGeneratorThread implements Runnable {
             customer.setLostFlag(new Byte("1"));
 
             dbHelper.updateCustomer(customer);
+            history.setCusEndId(customer.getId());
         }
         int timeToSleep = FastForward.generateTimeByFast(FastForward.TimeToGenerateACustomer);
         try {
@@ -68,7 +70,7 @@ public class CustomerGeneratorThread implements Runnable {
             customer.setArrivedTime(new Date());
             randomNumOfProducts = (int) (1 + Math.random() * (numOfProducts));
             customer.setNumOfProducts(randomNumOfProducts);
-
+            customer.setArrivedNanosec(System.nanoTime());
             dbHelper.insertACustomer(customer);
 
 
@@ -83,6 +85,7 @@ public class CustomerGeneratorThread implements Runnable {
                 customer.setLostFlag(new Byte("1"));
 
                 dbHelper.updateCustomer(customer);
+                history.setCusEndId(customer.getId());
             }
             timeToSleep = FastForward.generateTimeByFast(FastForward.TimeToGenerateACustomer);
             try {

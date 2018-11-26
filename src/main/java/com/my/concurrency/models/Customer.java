@@ -19,6 +19,10 @@ public class Customer {
 
     private Integer checkoutId;
 
+    private Long arrivedNanosec;
+
+    private Long checkStartNanosec;
+
     public Integer getId() {
         return id;
     }
@@ -81,5 +85,21 @@ public class Customer {
 
     public void setCheckoutId(Integer checkoutId) {
         this.checkoutId = checkoutId;
+    }
+
+    public Long getArrivedNanosec() {
+        return arrivedNanosec;
+    }
+
+    public void setArrivedNanosec(Long arrivedNanosec) {
+        this.arrivedNanosec = arrivedNanosec;
+    }
+
+    public Long getCheckStartNanosec() {
+        return checkStartNanosec;
+    }
+
+    public void setCheckStartNanosec(Long checkStartNanosec) {
+        this.checkStartNanosec = checkStartNanosec;
     }
 }

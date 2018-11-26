@@ -2,14 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.my.concurrency.dao.CustomerMapper">
   <resultMap id="BaseResultMap" type="com.my.concurrency.models.Customer">
-    <id column="id" jdbcType="INTEGER" property="id"/>
-    <result column="arrived_time" jdbcType="TIMESTAMP" property="arrivedTime"/>
-    <result column="finished_time" jdbcType="TIMESTAMP" property="finishedTime"/>
-    <result column="num_of_products" jdbcType="INTEGER" property="numOfProducts"/>
-    <result column="lost_flag" jdbcType="TINYINT" property="lostFlag"/>
-    <result column="check_start_time" jdbcType="TIMESTAMP" property="checkStartTime"/>
-    <result column="check_end_time" jdbcType="TIMESTAMP" property="checkEndTime"/>
-    <result column="checkout_id" jdbcType="INTEGER" property="checkoutId"/>
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="arrived_time" jdbcType="TIMESTAMP" property="arrivedTime" />
+    <result column="finished_time" jdbcType="TIMESTAMP" property="finishedTime" />
+    <result column="num_of_products" jdbcType="INTEGER" property="numOfProducts" />
+    <result column="lost_flag" jdbcType="TINYINT" property="lostFlag" />
+    <result column="check_start_time" jdbcType="TIMESTAMP" property="checkStartTime" />
+    <result column="check_end_time" jdbcType="TIMESTAMP" property="checkEndTime" />
+    <result column="checkout_id" jdbcType="INTEGER" property="checkoutId" />
+    <result column="arrived_nanosec" jdbcType="BIGINT" property="arrivedNanosec" />
+    <result column="check_start_nanosec" jdbcType="BIGINT" property="checkStartNanosec" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,26 +72,26 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, arrived_time, finished_time, num_of_products, lost_flag, check_start_time, check_end_time,
-    checkout_id
+    id, arrived_time, finished_time, num_of_products, lost_flag, check_start_time, check_end_time, 
+    checkout_id, arrived_nanosec, check_start_nanosec
   </sql>
   <select id="selectByExample" parameterType="com.my.concurrency.models.CustomerExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from customers
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null">
       order by ${orderByClause}
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
+    select 
+    <include refid="Base_Column_List" />
     from customers
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -100,16 +102,18 @@
   <delete id="deleteByExample" parameterType="com.my.concurrency.models.CustomerExample">
     delete from customers
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.my.concurrency.models.Customer">
-    insert into customers (id, arrived_time, finished_time,
-                           num_of_products, lost_flag, check_start_time, check_end_time, checkout_id)
-    values (#{id,jdbcType=INTEGER}, #{arrivedTime,jdbcType=TIMESTAMP}, #{finishedTime,jdbcType=TIMESTAMP},
-            #{numOfProducts,jdbcType=INTEGER}, #{lostFlag,jdbcType=TINYINT}, #{checkStartTime,jdbcType=TIMESTAMP},
-            #{checkEndTime,jdbcType=TIMESTAMP},
-            #{checkoutId,jdbcType=INTEGER})
+    insert into customers (id, arrived_time, finished_time, 
+      num_of_products, lost_flag, check_start_time, 
+      check_end_time, checkout_id, arrived_nanosec, 
+      check_start_nanosec)
+    values (#{id,jdbcType=INTEGER}, #{arrivedTime,jdbcType=TIMESTAMP}, #{finishedTime,jdbcType=TIMESTAMP}, 
+      #{numOfProducts,jdbcType=INTEGER}, #{lostFlag,jdbcType=TINYINT}, #{checkStartTime,jdbcType=TIMESTAMP}, 
+      #{checkEndTime,jdbcType=TIMESTAMP}, #{checkoutId,jdbcType=INTEGER}, #{arrivedNanosec,jdbcType=BIGINT}, 
+      #{checkStartNanosec,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.my.concurrency.models.Customer">
     insert into customers
@@ -138,6 +142,12 @@
       <if test="checkoutId != null">
         checkout_id,
       </if>
+      <if test="arrivedNanosec != null">
+        arrived_nanosec,
+      </if>
+      <if test="checkStartNanosec != null">
+        check_start_nanosec,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -164,12 +174,18 @@
       <if test="checkoutId != null">
         #{checkoutId,jdbcType=INTEGER},
       </if>
+      <if test="arrivedNanosec != null">
+        #{arrivedNanosec,jdbcType=BIGINT},
+      </if>
+      <if test="checkStartNanosec != null">
+        #{checkStartNanosec,jdbcType=BIGINT},
+      </if>
     </trim>
   </insert>
   <select id="countByExample" parameterType="com.my.concurrency.models.CustomerExample" resultType="java.lang.Long">
     select count(*) from customers
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
@@ -199,23 +215,31 @@
       <if test="record.checkoutId != null">
         checkout_id = #{record.checkoutId,jdbcType=INTEGER},
       </if>
+      <if test="record.arrivedNanosec != null">
+        arrived_nanosec = #{record.arrivedNanosec,jdbcType=BIGINT},
+      </if>
+      <if test="record.checkStartNanosec != null">
+        check_start_nanosec = #{record.checkStartNanosec,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause"/>
+      <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update customers
     set id = #{record.id,jdbcType=INTEGER},
-    arrived_time = #{record.arrivedTime,jdbcType=TIMESTAMP},
-    finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
-    num_of_products = #{record.numOfProducts,jdbcType=INTEGER},
-    lost_flag = #{record.lostFlag,jdbcType=TINYINT},
-    check_start_time = #{record.checkStartTime,jdbcType=TIMESTAMP},
-    check_end_time = #{record.checkEndTime,jdbcType=TIMESTAMP},
-    checkout_id = #{record.checkoutId,jdbcType=INTEGER}
+      arrived_time = #{record.arrivedTime,jdbcType=TIMESTAMP},
+      finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
+      num_of_products = #{record.numOfProducts,jdbcType=INTEGER},
+      lost_flag = #{record.lostFlag,jdbcType=TINYINT},
+      check_start_time = #{record.checkStartTime,jdbcType=TIMESTAMP},
+      check_end_time = #{record.checkEndTime,jdbcType=TIMESTAMP},
+      checkout_id = #{record.checkoutId,jdbcType=INTEGER},
+      arrived_nanosec = #{record.arrivedNanosec,jdbcType=BIGINT},
+      check_start_nanosec = #{record.checkStartNanosec,jdbcType=BIGINT}
     <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause"/>
+      <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.my.concurrency.models.Customer">
@@ -242,18 +266,26 @@
       <if test="checkoutId != null">
         checkout_id = #{checkoutId,jdbcType=INTEGER},
       </if>
+      <if test="arrivedNanosec != null">
+        arrived_nanosec = #{arrivedNanosec,jdbcType=BIGINT},
+      </if>
+      <if test="checkStartNanosec != null">
+        check_start_nanosec = #{checkStartNanosec,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.my.concurrency.models.Customer">
     update customers
-    set arrived_time     = #{arrivedTime,jdbcType=TIMESTAMP},
-        finished_time    = #{finishedTime,jdbcType=TIMESTAMP},
-        num_of_products  = #{numOfProducts,jdbcType=INTEGER},
-        lost_flag        = #{lostFlag,jdbcType=TINYINT},
-        check_start_time = #{checkStartTime,jdbcType=TIMESTAMP},
-        check_end_time   = #{checkEndTime,jdbcType=TIMESTAMP},
-        checkout_id      = #{checkoutId,jdbcType=INTEGER}
+    set arrived_time = #{arrivedTime,jdbcType=TIMESTAMP},
+      finished_time = #{finishedTime,jdbcType=TIMESTAMP},
+      num_of_products = #{numOfProducts,jdbcType=INTEGER},
+      lost_flag = #{lostFlag,jdbcType=TINYINT},
+      check_start_time = #{checkStartTime,jdbcType=TIMESTAMP},
+      check_end_time = #{checkEndTime,jdbcType=TIMESTAMP},
+      checkout_id = #{checkoutId,jdbcType=INTEGER},
+      arrived_nanosec = #{arrivedNanosec,jdbcType=BIGINT},
+      check_start_nanosec = #{checkStartNanosec,jdbcType=BIGINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

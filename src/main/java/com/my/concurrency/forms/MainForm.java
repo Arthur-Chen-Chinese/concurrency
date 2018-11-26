@@ -16,20 +16,21 @@ import com.my.concurrency.threads.CustomerGeneratorThread;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Pattern;
 
-/**
- * @author Brainrain
- */
+
 public class MainForm extends JFrame {
 
     private ArrayList<JLabel> checkoutLabelList;
@@ -43,6 +44,7 @@ public class MainForm extends JFrame {
     private CheckoutThread[] checkoutThreadList;
     private AssigningThread assigningThread;
     private CustomerGeneratorThread customerGeneratorThread;
+    private ArrayList<Thread> allThreads = new ArrayList<>();
     public final static String picPathCheckoutAvaiable = "src\\main\\resources\\pics\\checkout_available.png";
     public final static String picPathCheckoutUnavaiable = "src\\main\\resources\\pics\\checkout_unavailable.png";
     public final static String picPathCheckoutBusy = "src\\main\\resources\\pics\\checkout_busy.png";
@@ -55,6 +57,8 @@ public class MainForm extends JFrame {
     private ImageIcon iconCheckoutBusy;
     private ImageIcon iconCustomer;
     private DbHelper dbHelper;
+    private int numOfCheckout;
+    private int numOf5OrLess;
 
     public MainForm() {
         initComponents();
@@ -83,10 +87,17 @@ public class MainForm extends JFrame {
         checkoutList = new ArrayList<>();
         checkout5OrLessList = new ArrayList<>();
         customer5OrLessWaitingLists = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            customer5OrLessWaitingLists.add(new LinkedList<Customer>());
+        }
         history = new History();
         checkoutThreadList = new CheckoutThread[10];
-        dbHelper = new DbHelper();
+        dbHelper = new DbHelper(history);
         initCustomompnents();
+    }
+
+    public synchronized Date getStandardDate() {
+        return new Date();
     }
 
     private void initCustomompnents() {
@@ -121,8 +132,8 @@ public class MainForm extends JFrame {
         }
 
         String postfixOfFastForward = " X";
-        for (int i = 0; i < 5; i++) {
-            cbFastForward.addItem(((2 << i)) + postfixOfFastForward);
+        for (int i = 0; i < 6; i++) {
+            cbFastForward.addItem(((1 << i)) + postfixOfFastForward);
         }
 
 
@@ -145,58 +156,72 @@ public class MainForm extends JFrame {
 
         }
         //all validation are passed, create the checkout
-        int numOfCheckout = cbNoOfCheckouts.getSelectedIndex() + 1;
-        int numOf5OrLess = cbNoOf5OrLess.getSelectedIndex();
+        numOfCheckout = cbNoOfCheckouts.getSelectedIndex() + 1;
+        numOf5OrLess = cbNoOf5OrLess.getSelectedIndex();
         int numOfProduct = Integer.parseInt(tfNoOfProducts.getText());
         int timeToCheckAProduct = cbTimeToCheckAProduct.getSelectedIndex() + 1;
         int customerArriveRate = cbCustomerArrivalRate.getSelectedIndex() + 1;
-        int fastForward = 2 << cbFastForward.getSelectedIndex();
+        int fastForward = 1 << cbFastForward.getSelectedIndex();
 
 
         //set time and timeToCheckAProduct fastforward
-        FastForward.setTimeToCheckout(timeToCheckAProduct);
+        FastForward.setTimeToCheckoutTo(timeToCheckAProduct * 1000);
+        FastForward.setTimeToGenerateACustomer(3600 / customerArriveRate * 1000);
         FastForward.setTime(fastForward);
-
-        //using Executor framework to manage the below threads
-        //creates CheckoutThreads by numOfCheckout
-        //creates CheckoutThreads by numOf5OrLess
-//        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        int num = 1;
-        for (int i = 0; i < numOfCheckout; i++) {
-            Checkout checkout = new Checkout();
-            checkout.setName("Checkout - " + num);
-            checkout.setStartedTime(new Date());
-            checkout.setNumOfCheckedCustomers(0);
-            checkout.setNumOfCheckedItems(0);
-            dbHelper.insertACheckout(checkout);
-            CheckoutThread checkoutThread = new CheckoutThread(this, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, false);
-//            executorService.execute(checkoutThreadList);
-            checkoutThreadList[num - 1] = checkoutThread;
-            new Thread(checkoutThread).start();
-            num++;
-        }
-        for (int i = 0; i < numOf5OrLess; i++) {
-            Checkout checkout = new Checkout();
-            checkout.setName("Checkout5OrLess - " + num);
-            checkout.setStartedTime(new Date());
-            checkout.setNumOfCheckedCustomers(0);
-            checkout.setNumOfCheckedItems(0);
-            dbHelper.insertACheckout(checkout);
-            CheckoutThread checkoutThread = new CheckoutThread(this, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, true);
-//            executorService.execute(checkoutThreadList);
-            checkoutThreadList[num - 1] = checkoutThread;
-            new Thread(checkoutThread).start();
-            num++;
-        }
-
 
         //set the num of product and timeToCheckAProduct used by CustomerGenerateorThread and starts CustomerGenerateorThread
         customerGeneratorThread = new CustomerGeneratorThread(this, customerList, numOfProduct, history);
         new Thread(customerGeneratorThread).start();
 
         //starts Assigning Thread
-        AssigningThread assigningThread = new AssigningThread(this, customerWaitingLists, customer5OrLessWaitingLists, customerList);
+        assigningThread = new AssigningThread(this, customerWaitingLists, customer5OrLessWaitingLists, customerList, numOf5OrLess, numOfCheckout, history);
         new Thread(assigningThread).start();
+
+        //using Executor framework to manage the below threads
+        //creates CheckoutThreads by numOfCheckout
+        //creates CheckoutThreads by numOf5OrLess
+//        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        int num = 1;
+
+        for (int i = 0; i < numOf5OrLess; i++) {
+            Checkout checkout = new Checkout();
+            checkout.setName("Checkout5OrLess - " + num);
+            checkout.setStartedTime(new Date());
+            checkout.setNumOfCheckedCustomers(0);
+            checkout.setNumOfCheckedItems(0);
+            checkoutLabelList.get(num - 1).setHorizontalTextPosition(JLabel.CENTER);
+            checkoutLabelList.get(num - 1).setVerticalTextPosition(JLabel.BOTTOM);
+            checkoutLabelList.get(num - 1).setText(checkout.getName());
+            dbHelper.insertACheckout(checkout);
+            checkoutList.add(checkout);
+            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, true, history);
+//            executorService.execute(checkoutThreadList);
+            checkoutThreadList[num - 1] = checkoutThread;
+            Thread thread = new Thread(checkoutThread);
+            allThreads.add(thread);
+            thread.start();
+            num++;
+        }
+
+        for (int i = 0; i < numOfCheckout - numOf5OrLess; i++) {
+            Checkout checkout = new Checkout();
+            checkout.setName("Checkout - " + num);
+            checkout.setStartedTime(new Date());
+            checkout.setNumOfCheckedCustomers(0);
+            checkout.setNumOfCheckedItems(0);
+            checkoutLabelList.get(num - 1).setHorizontalTextPosition(JLabel.CENTER);
+            checkoutLabelList.get(num - 1).setVerticalTextPosition(JLabel.BOTTOM);
+            checkoutLabelList.get(num - 1).setText(checkout.getName());
+            dbHelper.insertACheckout(checkout);
+            checkoutList.add(checkout);
+            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, false, history);
+//            executorService.execute(checkoutThreadList);
+            checkoutThreadList[num - 1] = checkoutThread;
+            Thread thread = new Thread(checkoutThread);
+            allThreads.add(thread);
+            thread.start();
+            num++;
+        }
 
 
     }
@@ -214,48 +239,192 @@ public class MainForm extends JFrame {
                 jLabel.setIcon(iconCheckoutBusy);
                 break;
         }
+        jLabel.revalidate();
     }
 
-    public void updateWaitingLine(int numOfCheckout, Customer customer) {
+
+    public void updateWaitingLine(int orderOfCheckout, Customer customer) {
+        JPanel jPanel = waitingLineList.get(orderOfCheckout - 1);
         if (customer == null) {
-            JPanel jPanel = waitingLineList.get(numOfCheckout - 1);
             jPanel.removeAll();
             Queue<Customer> customerWaitingList;
             synchronized (customerWaitingLists) {
-                customerWaitingList = customerWaitingLists.get(numOfCheckout - 1);
-                for (Customer cus : customerWaitingList
-                ) {
-                    JLabel l = new JLabel(iconCustomer);
-                    l.setHorizontalTextPosition(SwingConstants.RIGHT);
-                    l.setText("" + cus.getNumOfProducts());
-                    jPanel.add(l);
+                synchronized (customer5OrLessWaitingLists) {
+                    if (orderOfCheckout <= numOf5OrLess) {
+                        customerWaitingList = customer5OrLessWaitingLists.get(orderOfCheckout - 1);
+                    } else {
+                        customerWaitingList = customerWaitingLists.get(orderOfCheckout - numOf5OrLess - 1);
+                    }
+                    for (Customer cus : customerWaitingList
+                    ) {
+                        JLabel l = new JLabel(iconCustomer);
+                        l.setHorizontalTextPosition(SwingConstants.RIGHT);
+                        l.setText("" + cus.getNumOfProducts());
+                        jPanel.add(l);
+                    }
                 }
             }
-            jPanel.repaint();
         } else {
-            JPanel jPanel = waitingLineList.get(numOfCheckout - 1);
             JLabel l = new JLabel(iconCustomer);
             l.setHorizontalTextPosition(SwingConstants.RIGHT);
             l.setText("" + customer.getNumOfProducts());
             jPanel.add(l);
-            jPanel.repaint();
         }
+        jPanel.revalidate();
     }
 
+
     private void btnEndandShowStatisticsActionPerformed(ActionEvent e) {
-        // TODO ends up all checkout thread by stopThread() and assigningThread and CustomerGeneratorThread
-        for (CheckoutThread c :
-                checkoutThreadList) {
+        // TODO ends up all checkout thread and assigningThread and CustomerGeneratorThread by stopThread()
+        for (int i = 0; i < numOfCheckout; i++) {
+            CheckoutThread c = checkoutThreadList[i];
             c.stopThread();
         }
+        customerGeneratorThread.stopThread();
+        assigningThread.stopThread();
+        //wait for end of all threads
+        for (Thread t :
+                allThreads) {
+            try {
+                t.join();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        }
+
         //todo save checkouts' data and history into database
+        for (
+                Checkout c :
+                checkoutList) {
+            dbHelper.updateCheckout(c);
+        }
+        int numOfProduct = Integer.parseInt(tfNoOfProducts.getText());
+        int timeToCheckAProduct = cbTimeToCheckAProduct.getSelectedIndex() + 1;
+        int customerArriveRate = cbCustomerArrivalRate.getSelectedIndex() + 1;
+        int fastForward = 1 << cbFastForward.getSelectedIndex();
+        history.setCheckoutStartId(checkoutList.get(0).getId());
+        history.setCheckoutEndId(checkoutList.get(checkoutList.size() - 1).getId());
+        history.setNumOf5OrLessCheckouts(numOf5OrLess);
+        history.setNumOfCheckouts(numOfCheckout);
+        history.setNumOfProductsInTrolley(numOfProduct);
+        history.setTimeForEachProduct(timeToCheckAProduct);
+        history.setSpecificRateRange(customerArriveRate);
+        dbHelper.insertAHistory(history);
+
 
         //todo invokes calculation method to get statistics
-
         //todo binds statistics with scrollTables or shows them in the JTextFields
+        calculationAndShowStatistics();
 
         //todo jumps to statistics tab
+        tabbedPane1.setSelectedIndex(1);
+    }
 
+    public void calculationAndShowStatistics() {
+        long runningTime[] = new long[8];
+
+        HashMap<Integer, String> checkoutNames = new HashMap<Integer, String>();
+        HashMap<Integer, Long> processingTimeOfEachCheckout = new HashMap<>(); //integer represents checkout ID, Long represents processing time
+
+        //obtains the checkout IDs for using later.
+        for (int i = 0; i < checkoutList.size(); i++) {
+            checkoutNames.put(checkoutList.get(i).getId(), checkoutList.get(i).getName());
+        }
+        int totalProductsProcessed = 0;
+
+        double totalCustomerWaitTime = 0;
+        double averageCustomerWaitTime = 0;
+
+        double averageProductsPerTrolley = 0;
+        int numberOfLostCustomers = 0;
+
+        double totalCheckoutUtilisation = 0;
+        double averageCheckoutUtilisation = 0;
+
+        //obtains all checkout's running time
+        for (int i = 0; i < checkoutList.size(); i++) {
+            Checkout c = checkoutList.get(i);
+            runningTime[i] = c.getFinishedTime().getTime() - c.getStartedTime().getTime();
+        }
+
+        List<Customer> customersByHistory = dbHelper.getCustomersByHistory(history);
+
+        int numOfCustomerStillInTheWaitState = 0;
+        for (Customer c :
+                customersByHistory) {
+            if (c.getLostFlag() == 1) {
+                numberOfLostCustomers++;
+            } else {
+                Long checkStartNanosec = c.getCheckStartNanosec();
+                if (checkStartNanosec == null) {
+                    //if checkStartNanosec is null, means the customer is still in the waitline,not start checking,
+                    //so, the customer should be excluded when it's calculating
+                } else {
+                    totalProductsProcessed += c.getNumOfProducts();
+                    totalCustomerWaitTime += c.getCheckStartNanosec() - c.getArrivedNanosec();
+                    long processingTime = c.getCheckEndTime().getTime() - c.getCheckStartTime().getTime();
+                    Long processTime = processingTimeOfEachCheckout.get(c.getCheckoutId());
+                    if (processTime == null) {
+                        processingTimeOfEachCheckout.put(c.getCheckoutId(), processingTime);
+                    } else {
+                        processingTimeOfEachCheckout.put(c.getCheckoutId(), processTime + processingTime);
+                    }
+                }
+
+            }
+            //add data into Customer Table
+            DefaultTableModel customersModel = (DefaultTableModel) tblCustomer.getModel();
+
+            double CustomerWaitTime;
+            Long checkStartNanosec = c.getCheckStartNanosec();
+            if (checkStartNanosec == null) {
+                //if checkStartNanosec is null, means the customer is still in the waitline,not start checking,
+                //so, the customer should be excluded when it's calculating
+                numOfCustomerStillInTheWaitState++;
+                CustomerWaitTime = 0;
+            } else {
+                CustomerWaitTime = (double) ((c.getCheckStartNanosec() - c.getArrivedNanosec()) / 1000000000.0);
+
+            }
+            //Date instance created by checkout thread may be before the customer generator thread: -0.123 sec
+            Object[] objects = {c.getId(), checkoutNames.get(c.getCheckoutId()), c.getLostFlag(), CustomerWaitTime + " sec", c.getNumOfProducts(), c.getArrivedTime(), c.getFinishedTime(), c.getCheckStartTime(), c.getCheckEndTime()};
+            customersModel.addRow(objects);
+        }
+        averageCustomerWaitTime = totalCustomerWaitTime / 1000000000 / (customersByHistory.size() - numOfCustomerStillInTheWaitState);
+        averageProductsPerTrolley = (double) totalProductsProcessed / (customersByHistory.size() - numOfCustomerStillInTheWaitState);
+
+        DefaultTableModel checkoutsModel = (DefaultTableModel) tblCheckout.getModel();
+        for (int i = 0; i < checkoutList.size(); i++) {
+            Checkout c = checkoutList.get(i);
+            Long processTime = processingTimeOfEachCheckout.get(c.getId());
+            double utilization;
+            if (processTime == null) {
+                utilization = 0;
+            } else {
+                BigDecimal bdProcessTime = new BigDecimal(processTime);
+                System.out.println(bdProcessTime);
+                BigDecimal bdOpenTime = new BigDecimal(c.getFinishedTime().getTime() - c.getStartedTime().getTime());
+                System.out.println(bdOpenTime);
+                BigDecimal result = bdProcessTime.divide(bdOpenTime, 6, BigDecimal.ROUND_HALF_UP);
+                System.out.println(result);
+                result = result.multiply(new BigDecimal(100));
+                System.out.println(result);
+                utilization = result.doubleValue();
+                System.out.println(utilization);
+
+            }
+
+            totalCheckoutUtilisation += utilization;
+            Object[] objects = {c.getName(), c.getStartedTime(), c.getFinishedTime(), utilization + "%", c.getNumOfCheckedCustomers(), c.getNumOfCheckedItems()};
+            checkoutsModel.addRow(objects);
+        }
+        averageCheckoutUtilisation = totalCheckoutUtilisation / checkoutList.size();
+        //shows the data
+        lbTotalProductsProcessed.setText(lbTotalProductsProcessed.getText() + totalProductsProcessed);
+        lbAveCusWaitTime.setText(lbAveCusWaitTime.getText() + String.format("%.4f sec", averageCustomerWaitTime));
+        lbAveChkUtili.setText(lbAveChkUtili.getText() + String.format("%.4f", averageCheckoutUtilisation) + "%");
+        lbAveProPerTro.setText(lbAveProPerTro.getText() + String.format("%.4f", averageProductsPerTrolley));
+        lbNumOfLostCus.setText(lbNumOfLostCus.getText() + numberOfLostCustomers);
     }
 
     private void initComponents() {
@@ -304,10 +473,15 @@ public class MainForm extends JFrame {
         tfNoOfProducts = new JTextField();
         panel2 = new JPanel();
         panel8 = new JPanel();
+        lbTotalProductsProcessed = new JLabel();
+        lbAveCusWaitTime = new JLabel();
+        lbAveChkUtili = new JLabel();
+        lbAveProPerTro = new JLabel();
+        lbNumOfLostCus = new JLabel();
         scrollPane1 = new JScrollPane();
-        table2 = new JTable();
+        tblCustomer = new JTable();
         scrollPane2 = new JScrollPane();
-        table1 = new JTable();
+        tblCheckout = new JTable();
 
         //======== this ========
         setTitle("Supermaket Simulator");
@@ -469,9 +643,9 @@ public class MainForm extends JFrame {
                     );
                     panel4Layout.setVerticalGroup(
                             panel4Layout.createParallelGroup()
-                                    .addComponent(panel5, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
-                                    .addComponent(pnlCheckoutsPlaceHolder, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
-                                    .addComponent(panel9, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                                    .addComponent(panel5, GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
+                                    .addComponent(pnlCheckoutsPlaceHolder, GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
+                                    .addComponent(panel9, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
                     );
                 }
 
@@ -514,7 +688,7 @@ public class MainForm extends JFrame {
                     label5.setText("Customer arrival rate");
 
                     //---- label7 ----
-                    label7.setText("Fast forwarde");
+                    label7.setText("Fast Forward");
 
                     //---- label3 ----
                     label3.setText("Time to check a product (0.5-6s)");
@@ -582,7 +756,7 @@ public class MainForm extends JFrame {
                                             .addComponent(label7)
                                             .addGap(6, 6, 6)
                                             .addComponent(cbFastForward, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                                            .addContainerGap(50, Short.MAX_VALUE))
+                                            .addContainerGap(138, Short.MAX_VALUE))
                     );
                 }
 
@@ -616,30 +790,122 @@ public class MainForm extends JFrame {
 
             //======== panel2 ========
             {
+                panel2.setToolTipText("sdfsd");
 
                 //======== panel8 ========
                 {
+
+                    //---- lbTotalProductsProcessed ----
+                    lbTotalProductsProcessed.setText("Total Products Processed :");
+
+                    //---- lbAveCusWaitTime ----
+                    lbAveCusWaitTime.setText("Average Customer Wait Time: ");
+
+                    //---- lbAveChkUtili ----
+                    lbAveChkUtili.setText("Average Checkout Utilization: ");
+
+                    //---- lbAveProPerTro ----
+                    lbAveProPerTro.setText("Average Products Per Trolley: ");
+
+                    //---- lbNumOfLostCus ----
+                    lbNumOfLostCus.setText("The Number of Lost Customers: ");
 
                     GroupLayout panel8Layout = new GroupLayout(panel8);
                     panel8.setLayout(panel8Layout);
                     panel8Layout.setHorizontalGroup(
                             panel8Layout.createParallelGroup()
-                                    .addGap(0, 465, Short.MAX_VALUE)
+                                    .addGroup(panel8Layout.createSequentialGroup()
+                                            .addContainerGap()
+                                            .addGroup(panel8Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(lbAveChkUtili, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                                                    .addComponent(lbAveProPerTro, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                                                    .addComponent(lbNumOfLostCus, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(lbTotalProductsProcessed, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                                                    .addComponent(lbAveCusWaitTime, GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
+                                            .addContainerGap(21, Short.MAX_VALUE))
                     );
                     panel8Layout.setVerticalGroup(
                             panel8Layout.createParallelGroup()
-                                    .addGap(0, 290, Short.MAX_VALUE)
+                                    .addGroup(panel8Layout.createSequentialGroup()
+                                            .addContainerGap()
+                                            .addComponent(lbTotalProductsProcessed)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(lbAveCusWaitTime)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(lbAveChkUtili)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(lbAveProPerTro)
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(lbNumOfLostCus)
+                                            .addContainerGap(136, Short.MAX_VALUE))
                     );
                 }
 
                 //======== scrollPane1 ========
                 {
-                    scrollPane1.setViewportView(table2);
+                    scrollPane1.setBorder(new TitledBorder(new LineBorder(Color.black, 1, true), "Customers"));
+
+                    //---- tblCustomer ----
+                    tblCustomer.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    tblCustomer.setModel(new DefaultTableModel(
+                            new Object[][]{
+                            },
+                            new String[]{
+                                    "Id", "Checkout Name", "Lost", "Total Wait Time", "Products", "Arrival Time", "Leave Time", "Checkout Start Time", "Checkout End Time"
+                            }
+                    ) {
+                        boolean[] columnEditable = new boolean[]{
+                                false, false, false, false, false, false, false, false, false
+                        };
+
+                        @Override
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                            return columnEditable[columnIndex];
+                        }
+                    });
+                    {
+                        TableColumnModel cm = tblCustomer.getColumnModel();
+                        cm.getColumn(1).setPreferredWidth(125);
+                        cm.getColumn(3).setPreferredWidth(125);
+                        cm.getColumn(5).setPreferredWidth(120);
+                        cm.getColumn(6).setPreferredWidth(120);
+                        cm.getColumn(7).setPreferredWidth(150);
+                        cm.getColumn(8).setPreferredWidth(150);
+                    }
+                    scrollPane1.setViewportView(tblCustomer);
                 }
 
                 //======== scrollPane2 ========
                 {
-                    scrollPane2.setViewportView(table1);
+                    scrollPane2.setBorder(new TitledBorder(new LineBorder(Color.black, 1, true), "Checkouts"));
+                    scrollPane2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+                    //---- tblCheckout ----
+                    tblCheckout.setBorder(null);
+                    tblCheckout.setModel(new DefaultTableModel(
+                            new Object[][]{
+                            },
+                            new String[]{
+                                    "Name", "Start Time", "End Time", "Utilization (Processing Time/ Running Time)", "Num of Checked Customers", "Num of Checked Products"
+                            }
+                    ) {
+                        boolean[] columnEditable = new boolean[]{
+                                false, false, false, false, false, false
+                        };
+
+                        @Override
+                        public boolean isCellEditable(int rowIndex, int columnIndex) {
+                            return columnEditable[columnIndex];
+                        }
+                    });
+                    {
+                        TableColumnModel cm = tblCheckout.getColumnModel();
+                        cm.getColumn(3).setPreferredWidth(290);
+                        cm.getColumn(4).setPreferredWidth(190);
+                        cm.getColumn(5).setPreferredWidth(180);
+                    }
+                    tblCheckout.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    scrollPane2.setViewportView(tblCheckout);
                 }
 
                 GroupLayout panel2Layout = new GroupLayout(panel2);
@@ -650,7 +916,7 @@ public class MainForm extends JFrame {
                                         .addContainerGap()
                                         .addGroup(panel2Layout.createParallelGroup()
                                                 .addGroup(panel2Layout.createSequentialGroup()
-                                                        .addComponent(scrollPane2, GroupLayout.PREFERRED_SIZE, 547, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
                                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(panel8, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 1018, Short.MAX_VALUE))
@@ -664,7 +930,7 @@ public class MainForm extends JFrame {
                                                 .addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
                                                 .addComponent(panel8, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE))
+                                        .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE))
                 );
             }
             tabbedPane1.addTab("Statistics", panel2);
@@ -736,9 +1002,14 @@ public class MainForm extends JFrame {
     private JTextField tfNoOfProducts;
     private JPanel panel2;
     private JPanel panel8;
+    private JLabel lbTotalProductsProcessed;
+    private JLabel lbAveCusWaitTime;
+    private JLabel lbAveChkUtili;
+    private JLabel lbAveProPerTro;
+    private JLabel lbNumOfLostCus;
     private JScrollPane scrollPane1;
-    private JTable table2;
+    private JTable tblCustomer;
     private JScrollPane scrollPane2;
-    private JTable table1;
+    private JTable tblCheckout;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

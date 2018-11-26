@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.my.concurrency.dao.CheckoutMapper">
   <resultMap id="BaseResultMap" type="com.my.concurrency.models.Checkout">
-    <id column="id" jdbcType="INTEGER" property="id"/>
-    <result column="name" jdbcType="VARCHAR" property="name"/>
-    <result column="started_time" jdbcType="TIMESTAMP" property="startedTime"/>
-    <result column="finished_time" jdbcType="TIMESTAMP" property="finishedTime"/>
-    <result column="num_of_checked_customers" jdbcType="INTEGER" property="numOfCheckedCustomers"/>
-    <result column="num_of_checked_items" jdbcType="INTEGER" property="numOfCheckedItems"/>
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="started_time" jdbcType="TIMESTAMP" property="startedTime" />
+    <result column="finished_time" jdbcType="TIMESTAMP" property="finishedTime" />
+    <result column="num_of_checked_customers" jdbcType="INTEGER" property="numOfCheckedCustomers" />
+    <result column="num_of_checked_items" jdbcType="INTEGER" property="numOfCheckedItems" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -75,18 +75,18 @@
     <if test="distinct">
       distinct
     </if>
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from checkouts
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null">
       order by ${orderByClause}
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
+    select 
+    <include refid="Base_Column_List" />
     from checkouts
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -97,7 +97,7 @@
   <delete id="deleteByExample" parameterType="com.my.concurrency.models.CheckoutExample">
     delete from checkouts
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.my.concurrency.models.Checkout">
@@ -154,7 +154,7 @@
   <select id="countByExample" parameterType="com.my.concurrency.models.CheckoutExample" resultType="java.lang.Long">
     select count(*) from checkouts
     <if test="_parameter != null">
-      <include refid="Example_Where_Clause"/>
+      <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
@@ -180,19 +180,19 @@
       </if>
     </set>
     <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause"/>
+      <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update checkouts
     set id = #{record.id,jdbcType=INTEGER},
-    name = #{record.name,jdbcType=VARCHAR},
-    started_time = #{record.startedTime,jdbcType=TIMESTAMP},
-    finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
-    num_of_checked_customers = #{record.numOfCheckedCustomers,jdbcType=INTEGER},
-    num_of_checked_items = #{record.numOfCheckedItems,jdbcType=INTEGER}
+      name = #{record.name,jdbcType=VARCHAR},
+      started_time = #{record.startedTime,jdbcType=TIMESTAMP},
+      finished_time = #{record.finishedTime,jdbcType=TIMESTAMP},
+      num_of_checked_customers = #{record.numOfCheckedCustomers,jdbcType=INTEGER},
+      num_of_checked_items = #{record.numOfCheckedItems,jdbcType=INTEGER}
     <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause"/>
+      <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.my.concurrency.models.Checkout">
