@@ -30,36 +30,117 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Pattern;
 
-
+/**
+ * The main GUI of the Supermarket Simulator shows the processes of checkouts and the statistic
+ * The main GUI of the Supermarket Simulator is designed using JFormDesigner which is a plugin of Intellij
+ */
 public class MainForm extends JFrame {
 
+    /**
+     * The array list of checkout
+     */
     private ArrayList<JLabel> checkoutLabelList;
+    /**
+     * The array list of checkout for updating the checkouts info dynamically
+     */
     private ArrayList<Checkout> checkoutList;
-    private ArrayList<Checkout> checkout5OrLessList;
+    /**
+     * The array list of waiting lines JPanel of checkouts for updating the waiting line GUI dynamically
+     */
     private ArrayList<JPanel> waitingLineList;
-    private BlockingQueue<Customer> customerList;   //customer generated
-    private ArrayList<Queue<Customer>> customerWaitingLists;   //customer already in supermarket
-    private ArrayList<Queue<Customer>> customer5OrLessWaitingLists;   //customer already in 5OrLess waitingLine supermarket
+    /**
+     * The list of customers generated
+     */
+    private BlockingQueue<Customer> customerList;
+    /**
+     * customer already in normal waitingLines in supermarket
+     */
+    private ArrayList<Queue<Customer>> customerWaitingLineLists;
+    /**
+     * customer already in 5OrLess waitingLines in supermarket
+     */
+    private ArrayList<Queue<Customer>> customer5OrLessWaitingLineLists;
+    /**
+     * The reference of history for recording the all info of the simulation
+     */
     private History history;
+    /**
+     * The array of CheckoutThread(not a thread, just implement runnable interface) for managing the CheckoutThread
+     */
     private CheckoutThread[] checkoutThreadList;
+    /**
+     * The reference of AssigningThread (not a thread, just implement runnable interface) for managing the AssigningThread
+     */
     private AssigningThread assigningThread;
+    /**
+     * The reference of CustomerGeneratorThread (not a thread, just implement runnable interface) for managing the CustomerGeneratorThread
+     */
     private CustomerGeneratorThread customerGeneratorThread;
+    /**
+     * The reference of all threads managing the all threads
+     */
     private ArrayList<Thread> allThreads = new ArrayList<>();
+    /**
+     * The path of checkout_available.png
+     */
     public final static String picPathCheckoutAvaiable = "src\\main\\resources\\pics\\checkout_available.png";
+    /**
+     * The path of checkout_unavailable.png
+     */
     public final static String picPathCheckoutUnavaiable = "src\\main\\resources\\pics\\checkout_unavailable.png";
+    /**
+     * The path of checkout_busy.png
+     */
     public final static String picPathCheckoutBusy = "src\\main\\resources\\pics\\checkout_busy.png";
+    /**
+     * The path of customer.png
+     */
     public final static String picPathCustomer = "src\\main\\resources\\pics\\customer.png";
+
+    /**
+     * The constant variable of checkout status: Available
+     */
     public static int CheckoutAvaiableStatus = 0;
+    /**
+     * The constant variable of checkout status: Unavailable
+     */
     public static int CheckoutUnavaiableStatus = 1;
+    /**
+     * The constant variable of checkout status: Busy
+     */
     public static int CheckoutBusyStatus = 2;
+    /**
+     * The ImageIcon of checkout status: Unavailable
+     */
     private ImageIcon iconCheckoutUnavaiable;
+    /**
+     * The ImageIcon of checkout status: Available
+     */
     private ImageIcon iconCheckoutAvaiable;
+    /**
+     * The ImageIcon of checkout status: Busy
+     */
     private ImageIcon iconCheckoutBusy;
+    /**
+     * The ImageIcon of customer
+     */
     private ImageIcon iconCustomer;
+    /**
+     * The reference of dbHelper
+     */
     private DbHelper dbHelper;
+    /**
+     * The number of all checkouts defined by configuration
+     */
     private int numOfCheckout;
+    /**
+     * The number of 5OrLess checkouts defined by configuration
+     */
     private int numOf5OrLess;
 
+    /**
+     * The constructor of MainForm, initial the GUI component and constant variables thereof.
+     */
     public MainForm() {
         initComponents();
 
@@ -76,19 +157,18 @@ public class MainForm extends JFrame {
         waitingLineList.add(pnlWL8);
         checkoutLabelList = new ArrayList<>();
         customerList = new ArrayBlockingQueue<Customer>(100);
-        customerWaitingLists = new ArrayList<>();
+        customerWaitingLineLists = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            customerWaitingLists.add(new LinkedList<Customer>());
+            customerWaitingLineLists.add(new LinkedList<Customer>());
         }
         iconCheckoutUnavaiable = new ImageIcon(picPathCheckoutUnavaiable);
         iconCheckoutAvaiable = new ImageIcon(picPathCheckoutAvaiable);
         iconCheckoutBusy = new ImageIcon(picPathCheckoutBusy);
         iconCustomer = new ImageIcon(picPathCustomer);
         checkoutList = new ArrayList<>();
-        checkout5OrLessList = new ArrayList<>();
-        customer5OrLessWaitingLists = new ArrayList<>();
+        customer5OrLessWaitingLineLists = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            customer5OrLessWaitingLists.add(new LinkedList<Customer>());
+            customer5OrLessWaitingLineLists.add(new LinkedList<Customer>());
         }
         history = new History();
         checkoutThreadList = new CheckoutThread[10];
@@ -96,10 +176,10 @@ public class MainForm extends JFrame {
         initCustomompnents();
     }
 
-    public synchronized Date getStandardDate() {
-        return new Date();
-    }
 
+    /**
+     * initial configuration components
+     */
     private void initCustomompnents() {
 
         for (int i = 0; i < 8; i++) {
@@ -139,6 +219,11 @@ public class MainForm extends JFrame {
 
     }
 
+    /**
+     * Validate the configuration and run simulating
+     *
+     * @param e ActionEvent
+     */
     private void btnStartSimulatingActionPerformed(ActionEvent e) {
         //conformation of input
         String regex = "^[0-9]*$";
@@ -171,11 +256,15 @@ public class MainForm extends JFrame {
 
         //set the num of product and timeToCheckAProduct used by CustomerGenerateorThread and starts CustomerGenerateorThread
         customerGeneratorThread = new CustomerGeneratorThread(this, customerList, numOfProduct, history);
-        new Thread(customerGeneratorThread).start();
+        Thread cusGenThread = new Thread(customerGeneratorThread);
+        allThreads.add(cusGenThread);
+        cusGenThread.start();
 
         //starts Assigning Thread
-        assigningThread = new AssigningThread(this, customerWaitingLists, customer5OrLessWaitingLists, customerList, numOf5OrLess, numOfCheckout, history);
-        new Thread(assigningThread).start();
+        assigningThread = new AssigningThread(this, customerWaitingLineLists, customer5OrLessWaitingLineLists, customerList, numOf5OrLess, numOfCheckout, history);
+        Thread assignThread = new Thread(assigningThread);
+        allThreads.add(assignThread);
+        assignThread.start();
 
         //using Executor framework to manage the below threads
         //creates CheckoutThreads by numOfCheckout
@@ -194,7 +283,7 @@ public class MainForm extends JFrame {
             checkoutLabelList.get(num - 1).setText(checkout.getName());
             dbHelper.insertACheckout(checkout);
             checkoutList.add(checkout);
-            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, true, history);
+            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, customerWaitingLineLists, customer5OrLessWaitingLineLists, true, history);
 //            executorService.execute(checkoutThreadList);
             checkoutThreadList[num - 1] = checkoutThread;
             Thread thread = new Thread(checkoutThread);
@@ -214,7 +303,7 @@ public class MainForm extends JFrame {
             checkoutLabelList.get(num - 1).setText(checkout.getName());
             dbHelper.insertACheckout(checkout);
             checkoutList.add(checkout);
-            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, waitingLineList, customerWaitingLists, customer5OrLessWaitingLists, false, history);
+            CheckoutThread checkoutThread = new CheckoutThread(this, i + 1, i + 1, num, checkout, customerWaitingLineLists, customer5OrLessWaitingLineLists, false, history);
 //            executorService.execute(checkoutThreadList);
             checkoutThreadList[num - 1] = checkoutThread;
             Thread thread = new Thread(checkoutThread);
@@ -226,8 +315,14 @@ public class MainForm extends JFrame {
 
     }
 
-    public void updateCheckout(int numOfCheckout, int checkoutStatus) {
-        JLabel jLabel = checkoutLabelList.get(numOfCheckout - 1);
+    /**
+     * Update the checkout Label according its status
+     *
+     * @param orderOfCheckout the order in all checkouts
+     * @param checkoutStatus  the checkout's status
+     */
+    public void updateCheckout(int orderOfCheckout, int checkoutStatus) {
+        JLabel jLabel = checkoutLabelList.get(orderOfCheckout - 1);
         switch (checkoutStatus) {
             case 0:
                 jLabel.setIcon(iconCheckoutAvaiable);
@@ -240,20 +335,25 @@ public class MainForm extends JFrame {
                 break;
         }
         jLabel.revalidate();
+        jLabel.repaint();
     }
 
-
+    /**
+     * Update GUI of the checkout waiting line JPanel
+     * @param orderOfCheckout the order in all checkouts
+     * @param customer customer whose checkout is finished
+     */
     public void updateWaitingLine(int orderOfCheckout, Customer customer) {
         JPanel jPanel = waitingLineList.get(orderOfCheckout - 1);
         if (customer == null) {
             jPanel.removeAll();
             Queue<Customer> customerWaitingList;
-            synchronized (customerWaitingLists) {
-                synchronized (customer5OrLessWaitingLists) {
+            synchronized (customerWaitingLineLists) {
+                synchronized (customer5OrLessWaitingLineLists) {
                     if (orderOfCheckout <= numOf5OrLess) {
-                        customerWaitingList = customer5OrLessWaitingLists.get(orderOfCheckout - 1);
+                        customerWaitingList = customer5OrLessWaitingLineLists.get(orderOfCheckout - 1);
                     } else {
-                        customerWaitingList = customerWaitingLists.get(orderOfCheckout - numOf5OrLess - 1);
+                        customerWaitingList = customerWaitingLineLists.get(orderOfCheckout - numOf5OrLess - 1);
                     }
                     for (Customer cus : customerWaitingList
                     ) {
@@ -271,11 +371,18 @@ public class MainForm extends JFrame {
             jPanel.add(l);
         }
         jPanel.revalidate();
+        jPanel.repaint();
+
     }
 
 
+    /**
+     * Send all threads a signal of stop and wait by join()
+     * Then, invoke calculationAndShowStatistics() to run a statistic
+     * @param e ActionEvent
+     */
     private void btnEndandShowStatisticsActionPerformed(ActionEvent e) {
-        // TODO ends up all checkout thread and assigningThread and CustomerGeneratorThread by stopThread()
+        //ends up all checkout thread and assigningThread and CustomerGeneratorThread by stopThread()
         for (int i = 0; i < numOfCheckout; i++) {
             CheckoutThread c = checkoutThreadList[i];
             c.stopThread();
@@ -292,7 +399,7 @@ public class MainForm extends JFrame {
             }
         }
 
-        //todo save checkouts' data and history into database
+        // save checkouts' data and history into database
         for (
                 Checkout c :
                 checkoutList) {
@@ -307,19 +414,23 @@ public class MainForm extends JFrame {
         history.setNumOf5OrLessCheckouts(numOf5OrLess);
         history.setNumOfCheckouts(numOfCheckout);
         history.setNumOfProductsInTrolley(numOfProduct);
-        history.setTimeForEachProduct(timeToCheckAProduct);
-        history.setSpecificRateRange(customerArriveRate);
+        history.setTimeForEachProduct(timeToCheckAProduct * 1000);
+        history.setCustomerGenerationRate(customerArriveRate);
+
         dbHelper.insertAHistory(history);
 
 
-        //todo invokes calculation method to get statistics
-        //todo binds statistics with scrollTables or shows them in the JTextFields
+        // invokes calculation method to get statistics
+        // binds statistics with scrollTables or shows them in the JTextFields
         calculationAndShowStatistics();
 
-        //todo jumps to statistics tab
+        // jumps to statistics tab
         tabbedPane1.setSelectedIndex(1);
     }
 
+    /**
+     * Run statistic and jump to the statistics tab
+     */
     public void calculationAndShowStatistics() {
         long runningTime[] = new long[8];
 
@@ -427,6 +538,9 @@ public class MainForm extends JFrame {
         lbNumOfLostCus.setText(lbNumOfLostCus.getText() + numberOfLostCustomers);
     }
 
+    /**
+     * Initial Components,the function is generated by JFormDesigner
+     */
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         tabbedPane1 = new JTabbedPane();

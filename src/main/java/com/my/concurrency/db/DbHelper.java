@@ -21,7 +21,13 @@ import java.util.List;
  * A Utility to help software interaction with database
  */
 public class DbHelper {
+    /**
+     * Sqlsession
+     */
     private SqlSession sqlSession;
+    /**
+     * History reference
+     */
     private History history;
 
     /**

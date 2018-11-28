@@ -2,60 +2,80 @@ package com.my.concurrency.models;
 
 import java.util.Random;
 
+/**
+ * The Class for speed up the simulation.
+ */
 public class FastForward {
     /**
-     * The unit is millisecond
+     * The minimum time of checking a items, the unit is millisecond
      */
     private final static int timeToCheckoutFrom = 500;
+    /**
+     * The maximum time of checking a items, the unit is millisecond
+     */
     private static int timeToCheckoutTo = 1000;
+    /**
+     * The interval between generating two customer, the unit is millisecond
+     */
     private static int timeToGenerateACustomer = 12000;
 
     /**
-     * The unit is single.
+     * The times of fast-forward. The unit is single.
      */
     private static int time = 1;
 
-    public static int TimeToCheckout = 0;
-    public static int TimeToGenerateACustomer = 1;
+    /**
+     * For parameter generationType passed to static method generateTimeByFast().
+     * Tell generateTimeByFast() to generate a fast-forwarded time of checkout
+     */
+    public static final int TimeToCheckout = 0;
+    /**
+     * For parameter generationType passed to static method generateTimeByFast().
+     * Tell generateTimeByFast() to generate a fast-forwarded time of generating customer
+     */
+    public static final int TimeToGenerateACustomer = 1;
 
-    public static int getTimeToCheckoutFrom() {
-        return timeToCheckoutFrom;
-    }
 
-    public static int getTimeToCheckoutTo() {
-        return timeToCheckoutTo;
-    }
-
+    /**
+     * Set the maximum time of checking a item
+     *
+     * @param timeToCheckoutTo the maximum time of checking a item whose unit is millisecond.
+     */
     public static void setTimeToCheckoutTo(int timeToCheckoutTo) {
         FastForward.timeToCheckoutTo = timeToCheckoutTo;
     }
 
-    public static int getTimeToGenerateACustomer() {
-        return timeToGenerateACustomer;
-    }
-
+    /**
+     * Set the time of generating a customer
+     * @param timeToGenerateACustomer the time of generating a customer whose unit is millisecond.
+     */
     public static void setTimeToGenerateACustomer(int timeToGenerateACustomer) {
         FastForward.timeToGenerateACustomer = timeToGenerateACustomer;
     }
 
-    public static int getTime() {
-        return time;
-    }
-
+    /**
+     * Set the times of fast-forward
+     * @param time the times of fast-forward
+     */
     public static void setTime(int time) {
         FastForward.time = time;
     }
 
 
-
-    public static int generateTimeByFast(int generateType) {
+    /**
+     * Generate a time according to generation type
+     *
+     * @param generationType the type of generated time, which is defined in the class as constant variables
+     * @return the generated time
+     */
+    public static int generateTimeByFast(int generationType) {
         int time = 0;
         Random random = new Random(System.currentTimeMillis());
-        switch (generateType) {
-            case 0:
+        switch (generationType) {
+            case TimeToCheckout:
                 time = (int) (timeToCheckoutFrom + Math.random() * (timeToCheckoutTo - timeToCheckoutFrom + 1));
                 break;
-            case 1:
+            case TimeToGenerateACustomer:
                 time = timeToGenerateACustomer;
                 break;
         }

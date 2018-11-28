@@ -2,17 +2,33 @@ package com.my.concurrency.models;
 
 import java.util.Date;
 
+/**
+ * The checkout class records id, name, the start time, finish time, the number of checked customers and the number of checked items.
+ */
 public class Checkout {
+    /**
+     * checkout id
+     */
     private Integer id;
-
+    /**
+     * checkout name
+     */
     private String name;
-
+    /**
+     * the time when checkout starts running
+     */
     private Date startedTime;
-
+    /**
+     * the time when checkout stops
+     */
     private Date finishedTime;
-
+    /**
+     * the number of checked customers by the checkout
+     */
     private Integer numOfCheckedCustomers;
-
+    /**
+     * the number of checked items by the checkout
+     */
     private Integer numOfCheckedItems;
 
     /**
@@ -88,36 +104,36 @@ public class Checkout {
     }
 
     /**
-     * Get the number of customers checkouted by the checkout
+     * Get the number of customers checked by the checkout
      *
-     * @return the number of customers checkouted by the checkout
+     * @return the number of customers checked by the checkout
      */
     public Integer getNumOfCheckedCustomers() {
         return numOfCheckedCustomers;
     }
 
     /**
-     * Set the number of customers checkouted by the checkout
+     * Set the number of customers checked by the checkout
      *
-     * @param numOfCheckedCustomers the number of customers checkouted by the checkout
+     * @param numOfCheckedCustomers the number of customers checked by the checkout
      */
     public void setNumOfCheckedCustomers(Integer numOfCheckedCustomers) {
         this.numOfCheckedCustomers = numOfCheckedCustomers;
     }
 
     /**
-     * Get the number of items checkouted by the checkout
+     * Get the number of items checked by the checkout
      *
-     * @return the number of items checkouted by the checkout
+     * @return the number of items checked by the checkout
      */
     public Integer getNumOfCheckedItems() {
         return numOfCheckedItems;
     }
 
     /**
-     * Set the number of items checkouted by the checkout
+     * Set the number of items checked by the checkout
      *
-     * @param numOfCheckedItems the number of items checkouted by the checkout
+     * @param numOfCheckedItems the number of items checked by the checkout
      */
     public void setNumOfCheckedItems(Integer numOfCheckedItems) {
         this.numOfCheckedItems = numOfCheckedItems;

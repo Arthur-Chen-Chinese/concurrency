@@ -11,29 +11,73 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 public class AssigningThread implements Runnable {
+    /**
+     * The point references to mainForm, which is used to update GUI
+     */
     private MainForm mf;
-    private ArrayList<Queue<Customer>> customerWaitingLists;
-    private ArrayList<Queue<Customer>> customer5OrLessWaitingLists;
+    /**
+     * customer already in normal waitingLines in supermarket
+     */
+    private ArrayList<Queue<Customer>> customerWaitingLineLists;
+    /**
+     * customer already in 5OrLess waitingLines in supermarket
+     */
+    private ArrayList<Queue<Customer>> customer5OrLessWaitingLineLists;
+    /**
+     * The list of customers generated
+     */
     private BlockingQueue<Customer> customerList;
+    /**
+     * The number of 5OrLess checkouts
+     */
     private int numOf5OrLess;
+    /**
+     * The number of total checkouts
+     */
     private int numOfCheckout;
+    /**
+     * The flag to stop the thread
+     */
     private boolean stop = false;
+    /**
+     * The history reference
+     */
     private History history;
 
-    public AssigningThread(MainForm mf, ArrayList<Queue<Customer>> customerWaitingLists, ArrayList<Queue<Customer>> customer5OrLessWaitingLists, BlockingQueue<Customer> customerList, int numOf5OrLess, int numOfCheckout, History history) {
+    /**
+     * The constructor of assigning thread
+     *
+     * @param mf                              the point references to mainForm, which is used to update GUI
+     * @param customerWaitingLineLists        customer already in normal waitingLines in supermarket, passed from mainForm
+     * @param customer5OrLessWaitingLineLists customer already in 5OrLess waitingLines in supermarket, passed from mainForm
+     * @param customerList                    The list of customers generated
+     * @param numOf5OrLess                    The number of 5OrLess checkouts
+     * @param numOfCheckout                   The number of total checkouts
+     * @param history                         The history reference
+     */
+    public AssigningThread(MainForm mf, ArrayList<Queue<Customer>> customerWaitingLineLists, ArrayList<Queue<Customer>> customer5OrLessWaitingLineLists, BlockingQueue<Customer> customerList, int numOf5OrLess, int numOfCheckout, History history) {
         this.mf = mf;
-        this.customerWaitingLists = customerWaitingLists;
-        this.customer5OrLessWaitingLists = customer5OrLessWaitingLists;
+        this.customerWaitingLineLists = customerWaitingLineLists;
+        this.customer5OrLessWaitingLineLists = customer5OrLessWaitingLineLists;
         this.customerList = customerList;
         this.numOf5OrLess = numOf5OrLess;
         this.numOfCheckout = numOfCheckout;
         this.history = history;
     }
 
+    /**
+     * The method is to tell the while loop in run() to stop
+     */
     public void stopThread() {
         this.stop = true;
     }
 
+    /**
+     * The run() method defines the functionality of Assigning Thread
+     * The method take customer from customerList where the generated customer is stored
+     * and assign the customer to the WaitingLineList(or 5OrLess WaitingLineList) according to the number of items the customer had
+     * if all the waitingLine are full, the customer leaves the store
+     */
     @Override
     public void run() {
         while (!stop) {
@@ -43,11 +87,11 @@ public class AssigningThread implements Runnable {
                 boolean leave_flag = true;
                 int num = 0;
                 //check if the all wait lines are full or not
-                synchronized (customerWaitingLists) {
-                    synchronized (customer5OrLessWaitingLists) {
+                synchronized (customerWaitingLineLists) {
+                    synchronized (customer5OrLessWaitingLineLists) {
                         if (numOfProducts < 6 && numOf5OrLess > 0) {
                             for (int i = 0; i < numOf5OrLess; i++) {
-                                Queue<Customer> q = customer5OrLessWaitingLists.get(i);
+                                Queue<Customer> q = customer5OrLessWaitingLineLists.get(i);
                                 if (q.size() < 6) {
                                     q.offer(customerToken);
                                     num = i + 1;
@@ -60,7 +104,7 @@ public class AssigningThread implements Runnable {
                         if (leave_flag != false) {
                             num = numOf5OrLess;
                             for (int i = 0; i < numOfCheckout - numOf5OrLess; i++) {
-                                Queue<Customer> q = customerWaitingLists.get(i);
+                                Queue<Customer> q = customerWaitingLineLists.get(i);
                                 if (q.size() < 6) {
                                     q.offer(customerToken);
                                     num += i + 1;
@@ -81,7 +125,6 @@ public class AssigningThread implements Runnable {
                     customerToken.setLostFlag(new Byte("1"));
                     DbHelper dbHelper = new DbHelper(history);
                     dbHelper.updateCustomer(customerToken);
-                    history.setCusEndId(customerToken.getId());
                 } else {
                     mf.updateWaitingLine(num, customerToken);
                 }

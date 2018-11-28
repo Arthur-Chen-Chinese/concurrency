@@ -3,7 +3,7 @@ package com.my.concurrency;
 import com.my.concurrency.forms.MainForm;
 
 /**
- * Hello world!
+ *  The main entrance of the Supermarket Simulator
  */
 public class App {
 

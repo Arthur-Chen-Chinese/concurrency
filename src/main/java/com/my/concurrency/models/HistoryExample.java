@@ -647,63 +647,63 @@ public class HistoryExample {
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeIsNull() {
-            addCriterion("specific_rate_range is null");
+        public Criteria andCustomerGenerationRateIsNull() {
+            addCriterion("customer_generation_rate is null");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeIsNotNull() {
-            addCriterion("specific_rate_range is not null");
+        public Criteria andCustomerGenerationRateIsNotNull() {
+            addCriterion("customer_generation_rate is not null");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeEqualTo(Integer value) {
-            addCriterion("specific_rate_range =", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateEqualTo(Integer value) {
+            addCriterion("customer_generation_rate =", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeNotEqualTo(Integer value) {
-            addCriterion("specific_rate_range <>", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateNotEqualTo(Integer value) {
+            addCriterion("customer_generation_rate <>", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeGreaterThan(Integer value) {
-            addCriterion("specific_rate_range >", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateGreaterThan(Integer value) {
+            addCriterion("customer_generation_rate >", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeGreaterThanOrEqualTo(Integer value) {
-            addCriterion("specific_rate_range >=", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateGreaterThanOrEqualTo(Integer value) {
+            addCriterion("customer_generation_rate >=", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeLessThan(Integer value) {
-            addCriterion("specific_rate_range <", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateLessThan(Integer value) {
+            addCriterion("customer_generation_rate <", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeLessThanOrEqualTo(Integer value) {
-            addCriterion("specific_rate_range <=", value, "specificRateRange");
+        public Criteria andCustomerGenerationRateLessThanOrEqualTo(Integer value) {
+            addCriterion("customer_generation_rate <=", value, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeIn(List<Integer> values) {
-            addCriterion("specific_rate_range in", values, "specificRateRange");
+        public Criteria andCustomerGenerationRateIn(List<Integer> values) {
+            addCriterion("customer_generation_rate in", values, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeNotIn(List<Integer> values) {
-            addCriterion("specific_rate_range not in", values, "specificRateRange");
+        public Criteria andCustomerGenerationRateNotIn(List<Integer> values) {
+            addCriterion("customer_generation_rate not in", values, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeBetween(Integer value1, Integer value2) {
-            addCriterion("specific_rate_range between", value1, value2, "specificRateRange");
+        public Criteria andCustomerGenerationRateBetween(Integer value1, Integer value2) {
+            addCriterion("customer_generation_rate between", value1, value2, "customerGenerationRate");
             return (Criteria) this;
         }
 
-        public Criteria andSpecificRateRangeNotBetween(Integer value1, Integer value2) {
-            addCriterion("specific_rate_range not between", value1, value2, "specificRateRange");
+        public Criteria andCustomerGenerationRateNotBetween(Integer value1, Integer value2) {
+            addCriterion("customer_generation_rate not between", value1, value2, "customerGenerationRate");
             return (Criteria) this;
         }
     }
